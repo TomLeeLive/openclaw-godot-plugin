@@ -2,8 +2,8 @@
 extends Node
 ## Implements OpenClaw tools for Godot Editor
 
-var editor_interface: EditorInterface
-var editor_plugin: EditorPlugin
+var editor_interface  # EditorInterface
+var editor_plugin     # EditorPlugin
 
 func execute(tool_name: String, args: Dictionary) -> Variant:
 	match tool_name:
