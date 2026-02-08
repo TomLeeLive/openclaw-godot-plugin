@@ -140,16 +140,16 @@ func node_find(args: Dictionary) -> Dictionary:
 	return {"success": true, "nodes": results}
 
 func _find_nodes(node: Node, name_filter: String, type_filter: String, group_filter: String, results: Array) -> void:
-	var match = true
+	var is_match = true
 	
 	if not name_filter.is_empty() and not name_filter in node.name:
-		match = false
+		is_match = false
 	if not type_filter.is_empty() and node.get_class() != type_filter:
-		match = false
+		is_match = false
 	if not group_filter.is_empty() and not node.is_in_group(group_filter):
-		match = false
+		is_match = false
 	
-	if match and (not name_filter.is_empty() or not type_filter.is_empty() or not group_filter.is_empty()):
+	if is_match and (not name_filter.is_empty() or not type_filter.is_empty() or not group_filter.is_empty()):
 		results.append({
 			"name": node.name,
 			"type": node.get_class(),
