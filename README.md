@@ -8,11 +8,13 @@ Connect Godot 4.x to [OpenClaw](https://github.com/openclaw/openclaw) AI assista
 
 ## ✨ Features
 
-- 🎬 **Scene Management** - Open, save, and inspect scenes
+- 🎬 **Scene Management** - Create, open, save, and inspect scenes
 - 🔧 **Node Manipulation** - Create, find, modify, delete nodes
-- 📸 **Debug Tools** - Screenshots, scene tree view
-- 🎮 **Editor Control** - Play, stop, pause scenes
+- 🎮 **Input Simulation** - Keyboard, mouse, and action input for game testing
+- 📸 **Debug Tools** - Screenshots, scene tree view, console logs
+- 🎯 **Editor Control** - Play, stop, pause scenes
 - 📜 **Script Access** - List and read GDScript files
+- 🔄 **Play Mode Stability** - Maintains connection during Play mode
 
 ## Requirements
 
@@ -52,17 +54,18 @@ openclaw godot status
 git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/workspace/skills/godot-plugin
 ```
 
-## Available Tools (30)
+## Available Tools (40)
 
-### Scene Tools
+### Scene Tools (5)
 | Tool | Description |
 |------|-------------|
 | `scene.getCurrent` | Get current scene info |
 | `scene.list` | List all scenes in project |
 | `scene.open` | Open a scene by path |
 | `scene.save` | Save current scene |
+| `scene.create` | Create new scene (Node2D/Node3D/Control) |
 
-### Node Tools
+### Node Tools (6)
 | Tool | Description |
 |------|-------------|
 | `node.find` | Find nodes by name, type, or group |
@@ -70,16 +73,16 @@ git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/wor
 | `node.delete` | Delete a node |
 | `node.getData` | Get node info and children |
 | `node.getProperty` | Get node property value |
-| `node.setProperty` | Set node property value |
+| `node.setProperty` | Set node property value (Vector2/3 supported) |
 
-### Transform Tools
+### Transform Tools (3)
 | Tool | Description |
 |------|-------------|
 | `transform.setPosition` | Set node position |
 | `transform.setRotation` | Set node rotation |
 | `transform.setScale` | Set node scale |
 
-### Editor Tools
+### Editor Tools (4)
 | Tool | Description |
 |------|-------------|
 | `editor.play` | Play current or custom scene |
@@ -87,48 +90,81 @@ git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/wor
 | `editor.pause` | Toggle pause |
 | `editor.getState` | Get editor state |
 
-### Debug Tools
+### Debug Tools (3)
 | Tool | Description |
 |------|-------------|
 | `debug.screenshot` | Capture viewport screenshot |
 | `debug.tree` | Get scene tree as text |
 | `debug.log` | Print to output |
 
-### Script Tools
+### Console Tools (2)
+| Tool | Description |
+|------|-------------|
+| `console.getLogs` | Get logs from Godot log file |
+| `console.clear` | Clear log marker (placeholder) |
+
+### Input Tools (7) - NEW
+| Tool | Description |
+|------|-------------|
+| `input.keyPress` | Press and release a key |
+| `input.keyDown` | Press and hold a key |
+| `input.keyUp` | Release a key |
+| `input.mouseClick` | Click at position (left/right/middle) |
+| `input.mouseMove` | Move mouse to position |
+| `input.actionPress` | Press an input action |
+| `input.actionRelease` | Release an input action |
+
+### Script Tools (2)
 | Tool | Description |
 |------|-------------|
 | `script.list` | List GDScript files |
 | `script.read` | Read script content |
 
-### Resource Tools
+### Resource Tools (1)
 | Tool | Description |
 |------|-------------|
 | `resource.list` | List resources by extension |
 
 ## Example Usage
 
+### Scene Creation
 ```
-You: What nodes are in my scene?
-
-OpenClaw: [Executes debug.tree]
-
-Your scene tree:
-▶ Main [Node2D]
-  ▶ Player [CharacterBody2D]
-    ▶ Sprite [Sprite2D]
-    ▶ CollisionShape [CollisionShape2D]
-  ▶ TileMap [TileMap]
-  ▶ UI [CanvasLayer]
-```
-
-```
-You: Create a Camera2D at position (100, 200)
+You: Create a 2D platformer scene
 
 OpenClaw: 
-[Executes node.create {type: "Camera2D", name: "MainCamera"}]
-[Executes transform.setPosition {path: "MainCamera", x: 100, y: 200}]
+[Executes scene.create {rootType: "Node2D", name: "Level1"}]
+[Executes node.create {type: "CharacterBody2D", name: "Player"}]
+[Executes node.create {type: "Camera2D", name: "Camera", parent: "Player"}]
+[Executes transform.setPosition {path: "Player", x: 100, y: 200}]
 
-Done! Created Camera2D "MainCamera" at position (100, 200).
+Done! Created Level1 scene with Player and Camera.
+```
+
+### Game Testing with Input
+```
+You: Test the player movement
+
+OpenClaw:
+[Executes editor.play]
+[Executes input.keyDown {key: "W"}]  # Move up
+[Executes input.keyUp {key: "W"}]
+[Executes input.actionPress {action: "jump"}]
+[Executes debug.screenshot]
+[Executes editor.stop]
+
+Tested player movement. Screenshot attached.
+```
+
+### Reading Logs
+```
+You: Check for errors
+
+OpenClaw:
+[Executes console.getLogs {type: "error", limit: 10}]
+
+Found 2 errors:
+- ERROR: Node not found: Player
+- ERROR: Invalid resource path
 ```
 
 ## Configuration
@@ -136,6 +172,89 @@ Done! Created Camera2D "MainCamera" at position (100, 200).
 The plugin connects to `http://localhost:18789` by default (OpenClaw Gateway).
 
 To change, modify `GATEWAY_URL` in `connection_manager.gd`.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Godot Editor                             │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │           OpenClawPlugin (EditorPlugin)                 │ │
+│  │           @tool script                                  │ │
+│  └──────────────────────┬─────────────────────────────────┘ │
+│                         │                                    │
+│                         ▼                                    │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │         ConnectionManager                               │ │
+│  │         (HTTP polling, PROCESS_MODE_ALWAYS)             │ │
+│  │                                                          │ │
+│  │  • Heartbeat: 30s interval                              │ │
+│  │  • Auto-reconnect on disconnect                         │ │
+│  │  • Maintains connection during Play mode                │ │
+│  └──────────────────────┬─────────────────────────────────┘ │
+│                         │                                    │
+│                         ▼                                    │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │           Tools (40 tools)                              │ │
+│  │                                                          │ │
+│  │  • Scene/Node/Transform manipulation                    │ │
+│  │  • Input simulation (keyboard, mouse, actions)          │ │
+│  │  • Debug tools (screenshot, logs)                       │ │
+│  │  • Editor control (play, stop)                          │ │
+│  └────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+                              │
+                              │ HTTP (port 18789)
+                              ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   OpenClaw Gateway                            │
+│                   http://localhost:18789                      │
+│                                                               │
+│  Endpoints:                                                   │
+│  • POST /godot/register  - Register Godot session             │
+│  • POST /godot/heartbeat - Keep session alive                 │
+│  • GET  /godot/poll      - Poll for commands                  │
+│  • POST /godot/result    - Send tool execution results        │
+└──────────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+### Plugin won't load
+- Check Godot version (4.x required)
+- Look for parse errors in Output panel
+- Ensure all .gd files are present in addons/openclaw/
+
+### Connection issues
+- Verify Gateway is running: `openclaw gateway status`
+- Check URL: default is `http://localhost:18789`
+- Look at OpenClaw dock panel in Godot for status
+
+### Input not working
+- Input simulation only works during Play mode
+- Ensure the game window has focus
+- Check if the action exists in Input Map
+
+### Play mode disconnects
+- Plugin uses `PROCESS_MODE_ALWAYS` to stay active
+- Heartbeat interval is 30 seconds
+- If disconnected, plugin auto-reconnects
+
+## Changelog
+
+### v1.1.0 (2026-02-08)
+- **Added** `scene.create` - Create new scenes programmatically
+- **Added** `console.getLogs` - Read Godot log files
+- **Added** Input simulation tools (7 tools)
+- **Fixed** Vector2/Vector3 conversion in `node.setProperty`
+- **Fixed** `scene.save` using ResourceSaver (no progress dialog error)
+- **Fixed** `scene.open` void return handling
+- **Fixed** HTTP request concurrency issues
+- **Improved** Play mode connection stability
+
+### v1.0.0 (2026-02-08)
+- Initial release with 30 tools
 
 ## License
 

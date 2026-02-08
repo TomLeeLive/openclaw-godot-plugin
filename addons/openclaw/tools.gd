@@ -65,6 +65,22 @@ func execute(tool_name: String, args: Dictionary) -> Variant:
 		"console.clear":
 			return console_clear()
 		
+		# Input tools
+		"input.keyPress":
+			return input_key_press(args)
+		"input.keyDown":
+			return input_key_down(args)
+		"input.keyUp":
+			return input_key_up(args)
+		"input.mouseClick":
+			return input_mouse_click(args)
+		"input.mouseMove":
+			return input_mouse_move(args)
+		"input.actionPress":
+			return input_action_press(args)
+		"input.actionRelease":
+			return input_action_release(args)
+		
 		# Script tools
 		"script.list":
 			return script_list(args)
@@ -587,6 +603,189 @@ func console_clear() -> Dictionary:
 		"success": true,
 		"note": "Godot logs cannot be cleared programmatically. Use getLogs with limit to see recent entries."
 	}
+
+#endregion
+
+#region Input Tools
+
+func input_key_press(args: Dictionary) -> Dictionary:
+	var key = args.get("key", "")
+	if key.is_empty():
+		return {"success": false, "error": "Key required"}
+	
+	var keycode = _get_keycode(key)
+	if keycode == KEY_NONE:
+		return {"success": false, "error": "Unknown key: %s" % key}
+	
+	# Press
+	var event_down = InputEventKey.new()
+	event_down.keycode = keycode
+	event_down.pressed = true
+	Input.parse_input_event(event_down)
+	
+	# Release
+	var event_up = InputEventKey.new()
+	event_up.keycode = keycode
+	event_up.pressed = false
+	Input.parse_input_event(event_up)
+	
+	return {"success": true, "key": key}
+
+func input_key_down(args: Dictionary) -> Dictionary:
+	var key = args.get("key", "")
+	if key.is_empty():
+		return {"success": false, "error": "Key required"}
+	
+	var keycode = _get_keycode(key)
+	if keycode == KEY_NONE:
+		return {"success": false, "error": "Unknown key: %s" % key}
+	
+	var event = InputEventKey.new()
+	event.keycode = keycode
+	event.pressed = true
+	Input.parse_input_event(event)
+	
+	return {"success": true, "key": key, "state": "down"}
+
+func input_key_up(args: Dictionary) -> Dictionary:
+	var key = args.get("key", "")
+	if key.is_empty():
+		return {"success": false, "error": "Key required"}
+	
+	var keycode = _get_keycode(key)
+	if keycode == KEY_NONE:
+		return {"success": false, "error": "Unknown key: %s" % key}
+	
+	var event = InputEventKey.new()
+	event.keycode = keycode
+	event.pressed = false
+	Input.parse_input_event(event)
+	
+	return {"success": true, "key": key, "state": "up"}
+
+func input_mouse_click(args: Dictionary) -> Dictionary:
+	var x = args.get("x", 0)
+	var y = args.get("y", 0)
+	var button = args.get("button", "left")
+	
+	var button_index = MOUSE_BUTTON_LEFT
+	match button:
+		"right": button_index = MOUSE_BUTTON_RIGHT
+		"middle": button_index = MOUSE_BUTTON_MIDDLE
+	
+	# Press
+	var event_down = InputEventMouseButton.new()
+	event_down.button_index = button_index
+	event_down.position = Vector2(x, y)
+	event_down.pressed = true
+	Input.parse_input_event(event_down)
+	
+	# Release
+	var event_up = InputEventMouseButton.new()
+	event_up.button_index = button_index
+	event_up.position = Vector2(x, y)
+	event_up.pressed = false
+	Input.parse_input_event(event_up)
+	
+	return {"success": true, "x": x, "y": y, "button": button}
+
+func input_mouse_move(args: Dictionary) -> Dictionary:
+	var x = args.get("x", 0)
+	var y = args.get("y", 0)
+	
+	var event = InputEventMouseMotion.new()
+	event.position = Vector2(x, y)
+	Input.parse_input_event(event)
+	
+	return {"success": true, "x": x, "y": y}
+
+func input_action_press(args: Dictionary) -> Dictionary:
+	var action = args.get("action", "")
+	if action.is_empty():
+		return {"success": false, "error": "Action name required"}
+	
+	if not InputMap.has_action(action):
+		return {"success": false, "error": "Unknown action: %s" % action}
+	
+	Input.action_press(action)
+	return {"success": true, "action": action, "state": "pressed"}
+
+func input_action_release(args: Dictionary) -> Dictionary:
+	var action = args.get("action", "")
+	if action.is_empty():
+		return {"success": false, "error": "Action name required"}
+	
+	if not InputMap.has_action(action):
+		return {"success": false, "error": "Unknown action: %s" % action}
+	
+	Input.action_release(action)
+	return {"success": true, "action": action, "state": "released"}
+
+func _get_keycode(key: String) -> int:
+	# Common key mappings
+	match key.to_upper():
+		"A": return KEY_A
+		"B": return KEY_B
+		"C": return KEY_C
+		"D": return KEY_D
+		"E": return KEY_E
+		"F": return KEY_F
+		"G": return KEY_G
+		"H": return KEY_H
+		"I": return KEY_I
+		"J": return KEY_J
+		"K": return KEY_K
+		"L": return KEY_L
+		"M": return KEY_M
+		"N": return KEY_N
+		"O": return KEY_O
+		"P": return KEY_P
+		"Q": return KEY_Q
+		"R": return KEY_R
+		"S": return KEY_S
+		"T": return KEY_T
+		"U": return KEY_U
+		"V": return KEY_V
+		"W": return KEY_W
+		"X": return KEY_X
+		"Y": return KEY_Y
+		"Z": return KEY_Z
+		"0": return KEY_0
+		"1": return KEY_1
+		"2": return KEY_2
+		"3": return KEY_3
+		"4": return KEY_4
+		"5": return KEY_5
+		"6": return KEY_6
+		"7": return KEY_7
+		"8": return KEY_8
+		"9": return KEY_9
+		"SPACE", " ": return KEY_SPACE
+		"ENTER", "RETURN": return KEY_ENTER
+		"ESCAPE", "ESC": return KEY_ESCAPE
+		"TAB": return KEY_TAB
+		"BACKSPACE": return KEY_BACKSPACE
+		"DELETE", "DEL": return KEY_DELETE
+		"UP": return KEY_UP
+		"DOWN": return KEY_DOWN
+		"LEFT": return KEY_LEFT
+		"RIGHT": return KEY_RIGHT
+		"SHIFT": return KEY_SHIFT
+		"CTRL", "CONTROL": return KEY_CTRL
+		"ALT": return KEY_ALT
+		"F1": return KEY_F1
+		"F2": return KEY_F2
+		"F3": return KEY_F3
+		"F4": return KEY_F4
+		"F5": return KEY_F5
+		"F6": return KEY_F6
+		"F7": return KEY_F7
+		"F8": return KEY_F8
+		"F9": return KEY_F9
+		"F10": return KEY_F10
+		"F11": return KEY_F11
+		"F12": return KEY_F12
+	return KEY_NONE
 
 #endregion
 
