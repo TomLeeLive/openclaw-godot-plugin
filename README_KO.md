@@ -54,7 +54,7 @@ openclaw godot status
 git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/workspace/skills/godot-plugin
 ```
 
-## 사용 가능한 도구 (40개)
+## 사용 가능한 도구 (30개 도구, 80+ 노드 타입)
 
 ### Scene 도구 (5개)
 | 도구 | 설명 |
@@ -69,7 +69,7 @@ git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/wor
 | 도구 | 설명 |
 |------|------|
 | `node.find` | 이름, 타입, 그룹으로 노드 찾기 |
-| `node.create` | 새 노드 생성 |
+| `node.create` | 새 노드 생성 (80+ 타입 지원) |
 | `node.delete` | 노드 삭제 |
 | `node.getData` | 노드 정보 및 자식 가져오기 |
 | `node.getProperty` | 노드 속성 값 가져오기 |

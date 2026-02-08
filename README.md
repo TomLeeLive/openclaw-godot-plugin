@@ -58,7 +58,7 @@ openclaw godot status
 git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/workspace/skills/godot-plugin
 ```
 
-## Available Tools (40)
+## Available Tools (30 tools, 80+ node types)
 
 ### Scene Tools (5)
 | Tool | Description |
@@ -73,7 +73,7 @@ git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/wor
 | Tool | Description |
 |------|-------------|
 | `node.find` | Find nodes by name, type, or group |
-| `node.create` | Create a new node |
+| `node.create` | Create a new node (80+ types supported) |
 | `node.delete` | Delete a node |
 | `node.getData` | Get node info and children |
 | `node.getProperty` | Get node property value |
