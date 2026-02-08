@@ -59,6 +59,12 @@ func execute(tool_name: String, args: Dictionary) -> Variant:
 		"debug.log":
 			return debug_log(args)
 		
+		# Console tools
+		"console.getLogs":
+			return console_get_logs(args)
+		"console.clear":
+			return console_clear()
+		
 		# Script tools
 		"script.list":
 			return script_list(args)
@@ -509,6 +515,78 @@ func debug_log(args: Dictionary) -> Dictionary:
 		_: print(message)
 	
 	return {"success": true}
+
+#endregion
+
+#region Console Tools
+
+func console_get_logs(args: Dictionary) -> Dictionary:
+	var limit = args.get("limit", 100)
+	var filter_type = args.get("type", "")  # "error", "warning", or empty for all
+	
+	# Find the log file
+	var log_dir = OS.get_user_data_dir() + "/logs"
+	var dir = DirAccess.open(log_dir)
+	if not dir:
+		return {"success": false, "error": "Cannot open logs directory: %s" % log_dir}
+	
+	# Find most recent log file
+	var log_files: Array = []
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	while file_name != "":
+		if file_name.ends_with(".log"):
+			log_files.append(file_name)
+		file_name = dir.get_next()
+	dir.list_dir_end()
+	
+	if log_files.is_empty():
+		return {"success": false, "error": "No log files found"}
+	
+	log_files.sort()
+	var latest_log = log_dir + "/" + log_files[-1]
+	
+	# Read log file
+	var file = FileAccess.open(latest_log, FileAccess.READ)
+	if not file:
+		return {"success": false, "error": "Cannot open log file"}
+	
+	var content = file.get_as_text()
+	file.close()
+	
+	var lines = content.split("\n")
+	var filtered_lines: Array = []
+	
+	# Filter by type if specified
+	for line in lines:
+		if line.is_empty():
+			continue
+		if filter_type.is_empty():
+			filtered_lines.append(line)
+		elif filter_type == "error" and ("ERROR" in line or "error" in line.to_lower()):
+			filtered_lines.append(line)
+		elif filter_type == "warning" and ("WARNING" in line or "warning" in line.to_lower()):
+			filtered_lines.append(line)
+	
+	# Get last N lines
+	var start_idx = max(0, filtered_lines.size() - limit)
+	var recent_logs = filtered_lines.slice(start_idx)
+	
+	return {
+		"success": true,
+		"logs": recent_logs,
+		"count": recent_logs.size(),
+		"total": filtered_lines.size(),
+		"logFile": latest_log
+	}
+
+func console_clear() -> Dictionary:
+	# Note: We can't truly clear Godot's log, but we can note the position
+	# For now, just return success and let the user know
+	return {
+		"success": true,
+		"note": "Godot logs cannot be cleared programmatically. Use getLogs with limit to see recent entries."
+	}
 
 #endregion
 
