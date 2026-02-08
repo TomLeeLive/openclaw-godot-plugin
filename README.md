@@ -23,9 +23,34 @@ Connect Godot 4.x to [OpenClaw](https://github.com/openclaw/openclaw) AI assista
 
 ## Installation
 
+### 1. Install OpenClaw Gateway Extension (Required)
+
+Copy the gateway extension files to OpenClaw:
+
+```bash
+# Copy extension files
+cp -r OpenClawPlugin~/* ~/.openclaw/extensions/godot/
+
+# Restart gateway to load the extension
+openclaw gateway restart
+
+# Verify
+openclaw godot status
+```
+
+> **Note:** `OpenClawPlugin~` contains the gateway extension that enables `godot_execute` and `godot_sessions` tools.
+
+### 2. Install Godot Plugin
+
 1. Copy `addons/openclaw` folder to your project's `addons/` directory
 2. Enable the plugin: `Project → Project Settings → Plugins → OpenClaw → Enable`
 3. The plugin will auto-connect to OpenClaw Gateway
+
+### 3. Install OpenClaw Skill (Optional)
+
+```bash
+git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/workspace/skills/godot-plugin
+```
 
 ## Available Tools (30)
 
