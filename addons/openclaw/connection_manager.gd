@@ -1,12 +1,12 @@
 @tool
 extends Node
-class_name OpenClawConnectionManager
 ## Handles HTTP communication with OpenClaw Gateway
 
 signal command_received(tool_call_id: String, tool_name: String, args: Dictionary)
 signal connection_changed(connected: bool)
 
 const GATEWAY_URL = "http://localhost:18789"
+const API_PREFIX = "/godot"
 const POLL_INTERVAL = 0.5
 const HEARTBEAT_INTERVAL = 10.0
 
@@ -80,7 +80,7 @@ func _register() -> void:
 	var json = JSON.stringify(data)
 	var headers = ["Content-Type: application/json"]
 	
-	var err = http_register.request(GATEWAY_URL + "/unity/register", headers, HTTPClient.METHOD_POST, json)
+	var err = http_register.request(GATEWAY_URL + API_PREFIX + "/register", headers, HTTPClient.METHOD_POST, json)
 	if err != OK:
 		print("[OpenClaw] Register request failed: %s" % err)
 		_schedule_reconnect()
@@ -108,7 +108,7 @@ func _on_poll_timer() -> void:
 	if not is_connected or session_id.is_empty():
 		return
 	
-	var url = "%s/unity/poll?sessionId=%s" % [GATEWAY_URL, session_id]
+	var url = "%s%s/poll?sessionId=%s" % [GATEWAY_URL, API_PREFIX, session_id]
 	http_poll.request(url)
 
 func _on_poll_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -143,7 +143,7 @@ func _on_heartbeat_timer() -> void:
 	var json = JSON.stringify(data)
 	var headers = ["Content-Type: application/json"]
 	
-	http_heartbeat.request(GATEWAY_URL + "/unity/heartbeat", headers, HTTPClient.METHOD_POST, json)
+	http_heartbeat.request(GATEWAY_URL + API_PREFIX + "/heartbeat", headers, HTTPClient.METHOD_POST, json)
 
 func _on_heartbeat_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
@@ -162,7 +162,7 @@ func send_result(tool_call_id: String, result: Variant) -> void:
 	var json = JSON.stringify(data)
 	var headers = ["Content-Type: application/json"]
 	
-	http_result.request(GATEWAY_URL + "/unity/result", headers, HTTPClient.METHOD_POST, json)
+	http_result.request(GATEWAY_URL + API_PREFIX + "/result", headers, HTTPClient.METHOD_POST, json)
 
 func _on_result_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:

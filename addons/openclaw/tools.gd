@@ -1,6 +1,5 @@
 @tool
 extends Node
-class_name OpenClawTools
 ## Implements OpenClaw tools for Godot Editor
 
 var editor_interface: EditorInterface
