@@ -125,7 +125,8 @@ func scene_save() -> Dictionary:
 
 func scene_create(args: Dictionary) -> Dictionary:
 	var root_type = args.get("rootType", "Node3D")
-	var scene_name = args.get("name", "NewScene")
+	var scene_name = args.get("name", "new_scene")
+	var save_path = args.get("path", "res://%s.tscn" % scene_name.to_snake_case())
 	
 	# Create root node based on type
 	var root: Node
@@ -138,18 +139,28 @@ func scene_create(args: Dictionary) -> Dictionary:
 	
 	root.name = scene_name
 	
-	# Create a packed scene and set the root
+	# Pack and save the scene
 	var packed_scene = PackedScene.new()
-	packed_scene.pack(root)
+	var pack_result = packed_scene.pack(root)
+	if pack_result != OK:
+		root.queue_free()
+		return {"success": false, "error": "Failed to pack scene"}
+	
+	var save_result = ResourceSaver.save(packed_scene, save_path)
+	if save_result != OK:
+		root.queue_free()
+		return {"success": false, "error": "Failed to save scene to %s" % save_path}
+	
+	root.queue_free()
 	
 	# Open the new scene in editor
-	editor_interface.edit_node(root)
+	editor_interface.open_scene_from_path(save_path)
 	
 	return {
 		"success": true,
 		"rootType": root_type,
 		"name": scene_name,
-		"note": "Scene created. Use scene.save to save it."
+		"path": save_path
 	}
 
 #endregion
