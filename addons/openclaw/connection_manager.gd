@@ -13,6 +13,8 @@ const HEARTBEAT_INTERVAL = 30.0  # Extended for Play mode stability
 var session_id: String = ""
 var is_connected: bool = false
 var is_running: bool = false
+var is_polling: bool = false
+var is_heartbeating: bool = false
 
 var http_register: HTTPRequest
 var http_poll: HTTPRequest
@@ -108,13 +110,15 @@ func _on_register_completed(result: int, response_code: int, headers: PackedStri
 		_schedule_reconnect()
 
 func _on_poll_timer() -> void:
-	if not is_connected or session_id.is_empty():
+	if not is_connected or session_id.is_empty() or is_polling:
 		return
 	
+	is_polling = true
 	var url = "%s%s/poll?sessionId=%s" % [GATEWAY_URL, API_PREFIX, session_id]
 	http_poll.request(url)
 
 func _on_poll_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	is_polling = false
 	if result != HTTPRequest.RESULT_SUCCESS:
 		return
 	
@@ -139,9 +143,10 @@ func _on_poll_completed(result: int, response_code: int, headers: PackedStringAr
 		command_received.emit(tool_call_id, tool_name, args)
 
 func _on_heartbeat_timer() -> void:
-	if not is_connected or session_id.is_empty():
+	if not is_connected or session_id.is_empty() or is_heartbeating:
 		return
 	
+	is_heartbeating = true
 	var data = {"sessionId": session_id}
 	var json = JSON.stringify(data)
 	var headers = ["Content-Type: application/json"]
@@ -149,6 +154,7 @@ func _on_heartbeat_timer() -> void:
 	http_heartbeat.request(GATEWAY_URL + API_PREFIX + "/heartbeat", headers, HTTPClient.METHOD_POST, json)
 
 func _on_heartbeat_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	is_heartbeating = false
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
 		print("[OpenClaw] Heartbeat failed, reconnecting...")
 		is_connected = false
