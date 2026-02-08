@@ -1,5 +1,9 @@
 # 🐾 OpenClaw Godot Plugin
 
+> **TL;DR:** Vibe-code your game development remotely from anywhere! 🌍
+> 
+> **한줄요약:** 이제 집밖에서도 원격으로 바이브코딩으로 게임 개발 가능합니다! 🎮
+
 Connect Godot 4.x to [OpenClaw](https://github.com/openclaw/openclaw) AI assistant via HTTP.
 
 [![Godot](https://img.shields.io/badge/Godot-4.x-blue?logo=godot-engine)](https://godotengine.org)
