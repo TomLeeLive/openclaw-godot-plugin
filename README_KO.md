@@ -219,6 +219,29 @@ OpenClaw:
 └──────────────────────────────────────────────────────────────┘
 ```
 
+## 파일 구조
+
+### Skill vs Extension
+
+| 경로 | 용도 |
+|------|------|
+| `~/.openclaw/workspace/skills/godot-plugin/` | **Skill** - AI 학습 문서 (SKILL.md), 워크플로우 패턴, 도구 사용 가이드. 배포용 extension 소스 포함. |
+| `~/.openclaw/extensions/godot/` | **Extension** - Gateway가 로드하는 실제 코드. `godot_execute`, `godot_sessions` 도구 구현체. |
+
+**요약:** Skill = AI 문서, Extension = 실행 코드
+
+### 설치 흐름
+
+```
+Plugin (OpenClawPlugin~/)  ───복사───→  ~/.openclaw/extensions/godot/
+                                └── 수동 설치
+
+Skill (extension/)         ───복사───→  ~/.openclaw/extensions/godot/
+                                └── install-extension.sh
+```
+
+두 경로 모두 동일한 extension 코드를 설치합니다. 편한 방법을 사용하세요.
+
 ## 문제 해결
 
 ### 플러그인이 로드되지 않음

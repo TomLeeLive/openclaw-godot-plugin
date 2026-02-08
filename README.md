@@ -223,6 +223,29 @@ To change, modify `GATEWAY_URL` in `connection_manager.gd`.
 └──────────────────────────────────────────────────────────────┘
 ```
 
+## File Structure
+
+### Skill vs Extension
+
+| Path | Purpose |
+|------|---------|
+| `~/.openclaw/workspace/skills/godot-plugin/` | **Skill** - AI learning documents (SKILL.md), workflow patterns, tool usage guide. Includes extension source for distribution. |
+| `~/.openclaw/extensions/godot/` | **Extension** - Actual code loaded by Gateway. Implements `godot_execute` and `godot_sessions` tools. |
+
+**Summary:** Skill = AI documentation, Extension = Executable code
+
+### Installation Flow
+
+```
+Plugin (OpenClawPlugin~/)  ───copy───→  ~/.openclaw/extensions/godot/
+                                └── Manual installation
+
+Skill (extension/)         ───copy───→  ~/.openclaw/extensions/godot/
+                                └── install-extension.sh
+```
+
+Both paths install the same extension code. Use whichever method is convenient.
+
 ## Troubleshooting
 
 ### Plugin won't load
