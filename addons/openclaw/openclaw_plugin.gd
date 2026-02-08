@@ -6,8 +6,8 @@ extends EditorPlugin
 const ConnectionManager = preload("res://addons/openclaw/connection_manager.gd")
 const Tools = preload("res://addons/openclaw/tools.gd")
 
-var connection_manager: ConnectionManager
-var tools: Tools
+var connection_manager
+var tools
 var status_label: Label
 var dock: Control
 
