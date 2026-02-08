@@ -31,8 +31,8 @@ func _enter_tree() -> void:
 	# Create dock UI
 	_create_dock()
 	
-	# Start connection
-	connection_manager.start()
+	# Start connection (deferred to ensure _ready() has run)
+	connection_manager.call_deferred("start")
 	
 	print("[OpenClaw] Plugin loaded!")
 
