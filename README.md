@@ -243,18 +243,7 @@ To change, modify `GATEWAY_URL` in `connection_manager.gd`.
 
 ## Changelog
 
-### v1.1.0 (2026-02-08)
-- **Added** `scene.create` - Create new scenes programmatically
-- **Added** `console.getLogs` - Read Godot log files
-- **Added** Input simulation tools (7 tools)
-- **Fixed** Vector2/Vector3 conversion in `node.setProperty`
-- **Fixed** `scene.save` using ResourceSaver (no progress dialog error)
-- **Fixed** `scene.open` void return handling
-- **Fixed** HTTP request concurrency issues
-- **Improved** Play mode connection stability
-
-### v1.0.0 (2026-02-08)
-- Initial release with 30 tools
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
