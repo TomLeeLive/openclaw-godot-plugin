@@ -350,6 +350,14 @@ func node_set_property(args: Dictionary) -> Dictionary:
 	if not node:
 		return {"success": false, "error": "Node not found"}
 	
+	# Convert Dictionary to Vector2/Vector3 if needed
+	if value is Dictionary:
+		if value.has("x") and value.has("y"):
+			if value.has("z"):
+				value = Vector3(value.x, value.y, value.z)
+			else:
+				value = Vector2(value.x, value.y)
+	
 	node.set(prop, value)
 	return {"success": true}
 
