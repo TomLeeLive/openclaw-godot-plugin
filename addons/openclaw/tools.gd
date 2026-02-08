@@ -16,6 +16,8 @@ func execute(tool_name: String, args: Dictionary) -> Variant:
 			return scene_open(args)
 		"scene.save":
 			return scene_save()
+		"scene.create":
+			return scene_create(args)
 		
 		# Node tools
 		"node.find":
@@ -120,6 +122,35 @@ func scene_save() -> Dictionary:
 	
 	editor_interface.save_scene()
 	return {"success": true}
+
+func scene_create(args: Dictionary) -> Dictionary:
+	var root_type = args.get("rootType", "Node3D")
+	var scene_name = args.get("name", "NewScene")
+	
+	# Create root node based on type
+	var root: Node
+	match root_type:
+		"Node2D": root = Node2D.new()
+		"Node3D": root = Node3D.new()
+		"Control": root = Control.new()
+		"Node": root = Node.new()
+		_: root = Node3D.new()
+	
+	root.name = scene_name
+	
+	# Create a packed scene and set the root
+	var packed_scene = PackedScene.new()
+	packed_scene.pack(root)
+	
+	# Open the new scene in editor
+	editor_interface.edit_node(root)
+	
+	return {
+		"success": true,
+		"rootType": root_type,
+		"name": scene_name,
+		"note": "Scene created. Use scene.save to save it."
+	}
 
 #endregion
 
@@ -377,12 +408,17 @@ func editor_stop() -> Dictionary:
 	return {"success": true}
 
 func editor_pause() -> Dictionary:
-	# Toggle pause
-	var tree = Engine.get_main_loop()
-	if tree:
-		tree.paused = not tree.paused
-		return {"success": true, "paused": tree.paused}
-	return {"success": false, "error": "No scene tree"}
+	# Note: Pause only works in editor context, not running game
+	if not editor_interface.is_playing_scene():
+		return {"success": false, "error": "No scene is playing"}
+	
+	# Use EditorInterface to check state - direct pause not available from editor
+	# Return info about current state
+	return {
+		"success": true,
+		"isPlaying": editor_interface.is_playing_scene(),
+		"note": "Use game window to pause (F6) or stop from editor"
+	}
 
 func editor_get_state() -> Dictionary:
 	return {

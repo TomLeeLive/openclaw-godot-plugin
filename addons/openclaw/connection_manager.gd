@@ -8,7 +8,7 @@ signal connection_changed(connected: bool)
 const GATEWAY_URL = "http://localhost:18789"
 const API_PREFIX = "/godot"
 const POLL_INTERVAL = 0.5
-const HEARTBEAT_INTERVAL = 10.0
+const HEARTBEAT_INTERVAL = 30.0  # Extended for Play mode stability
 
 var session_id: String = ""
 var is_connected: bool = false
@@ -23,6 +23,9 @@ var poll_timer: Timer
 var heartbeat_timer: Timer
 
 func _ready() -> void:
+	# Continue processing during Play mode
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	# Create HTTP request nodes
 	http_register = HTTPRequest.new()
 	http_register.request_completed.connect(_on_register_completed)
