@@ -5,6 +5,21 @@ All notable changes to OpenClaw Godot Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-02-08
+
+### Improved
+- `node.create` now supports 80+ node types (previously ~18)
+  - Added: CSG nodes (CSGBox3D, CSGSphere3D, CSGCylinder3D, etc.)
+  - Added: UI nodes (ColorRect, TextureRect, Panel, containers, etc.)
+  - Added: Physics nodes (StaticBody2D/3D, CollisionShape2D/3D, etc.)
+  - Added: Audio nodes (AudioStreamPlayer, AudioStreamPlayer2D/3D)
+  - Added: Particle nodes (GPUParticles2D/3D, CPUParticles2D/3D)
+  - Added: Many more (MeshInstance3D, TileMap, Line2D, etc.)
+- Unknown types now return error instead of silently creating Node
+
+### Fixed
+- Removed `Tween.new()` (not supported in Godot 4.x - use `create_tween()`)
+
 ## [1.1.0] - 2026-02-08
 
 ### Added

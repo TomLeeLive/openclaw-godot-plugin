@@ -248,24 +248,107 @@ func node_create(args: Dictionary) -> Dictionary:
 	
 	var new_node: Node
 	match type_name:
+		# Basic nodes
+		"Node": new_node = Node.new()
 		"Node2D": new_node = Node2D.new()
 		"Node3D": new_node = Node3D.new()
+		# 2D nodes
 		"Sprite2D": new_node = Sprite2D.new()
-		"Sprite3D": new_node = Sprite3D.new()
+		"AnimatedSprite2D": new_node = AnimatedSprite2D.new()
 		"CharacterBody2D": new_node = CharacterBody2D.new()
-		"CharacterBody3D": new_node = CharacterBody3D.new()
 		"RigidBody2D": new_node = RigidBody2D.new()
-		"RigidBody3D": new_node = RigidBody3D.new()
+		"StaticBody2D": new_node = StaticBody2D.new()
 		"Area2D": new_node = Area2D.new()
-		"Area3D": new_node = Area3D.new()
 		"Camera2D": new_node = Camera2D.new()
+		"CollisionShape2D": new_node = CollisionShape2D.new()
+		"CollisionPolygon2D": new_node = CollisionPolygon2D.new()
+		"TileMap": new_node = TileMap.new()
+		"Path2D": new_node = Path2D.new()
+		"PathFollow2D": new_node = PathFollow2D.new()
+		"Line2D": new_node = Line2D.new()
+		"Polygon2D": new_node = Polygon2D.new()
+		"PointLight2D": new_node = PointLight2D.new()
+		"DirectionalLight2D": new_node = DirectionalLight2D.new()
+		# 3D nodes
+		"Sprite3D": new_node = Sprite3D.new()
+		"CharacterBody3D": new_node = CharacterBody3D.new()
+		"RigidBody3D": new_node = RigidBody3D.new()
+		"StaticBody3D": new_node = StaticBody3D.new()
+		"Area3D": new_node = Area3D.new()
 		"Camera3D": new_node = Camera3D.new()
-		"Light2D": new_node = PointLight2D.new()
+		"CollisionShape3D": new_node = CollisionShape3D.new()
+		"MeshInstance3D": new_node = MeshInstance3D.new()
 		"DirectionalLight3D": new_node = DirectionalLight3D.new()
-		"Label": new_node = Label.new()
-		"Button": new_node = Button.new()
+		"OmniLight3D": new_node = OmniLight3D.new()
+		"SpotLight3D": new_node = SpotLight3D.new()
+		"Path3D": new_node = Path3D.new()
+		"PathFollow3D": new_node = PathFollow3D.new()
+		"NavigationRegion3D": new_node = NavigationRegion3D.new()
+		"WorldEnvironment": new_node = WorldEnvironment.new()
+		# CSG nodes
+		"CSGBox3D": new_node = CSGBox3D.new()
+		"CSGSphere3D": new_node = CSGSphere3D.new()
+		"CSGCylinder3D": new_node = CSGCylinder3D.new()
+		"CSGTorus3D": new_node = CSGTorus3D.new()
+		"CSGPolygon3D": new_node = CSGPolygon3D.new()
+		"CSGMesh3D": new_node = CSGMesh3D.new()
+		"CSGCombiner3D": new_node = CSGCombiner3D.new()
+		# UI nodes
 		"Control": new_node = Control.new()
-		_: new_node = Node.new()
+		"ColorRect": new_node = ColorRect.new()
+		"TextureRect": new_node = TextureRect.new()
+		"Label": new_node = Label.new()
+		"RichTextLabel": new_node = RichTextLabel.new()
+		"Button": new_node = Button.new()
+		"TextureButton": new_node = TextureButton.new()
+		"LineEdit": new_node = LineEdit.new()
+		"TextEdit": new_node = TextEdit.new()
+		"Panel": new_node = Panel.new()
+		"PanelContainer": new_node = PanelContainer.new()
+		"MarginContainer": new_node = MarginContainer.new()
+		"HBoxContainer": new_node = HBoxContainer.new()
+		"VBoxContainer": new_node = VBoxContainer.new()
+		"GridContainer": new_node = GridContainer.new()
+		"ScrollContainer": new_node = ScrollContainer.new()
+		"TabContainer": new_node = TabContainer.new()
+		"ProgressBar": new_node = ProgressBar.new()
+		"HSlider": new_node = HSlider.new()
+		"VSlider": new_node = VSlider.new()
+		"SpinBox": new_node = SpinBox.new()
+		"OptionButton": new_node = OptionButton.new()
+		"CheckBox": new_node = CheckBox.new()
+		"CheckButton": new_node = CheckButton.new()
+		# Audio
+		"AudioStreamPlayer": new_node = AudioStreamPlayer.new()
+		"AudioStreamPlayer2D": new_node = AudioStreamPlayer2D.new()
+		"AudioStreamPlayer3D": new_node = AudioStreamPlayer3D.new()
+		# Animation
+		"AnimationPlayer": new_node = AnimationPlayer.new()
+		"AnimationTree": new_node = AnimationTree.new()
+		# Misc
+		"Timer": new_node = Timer.new()
+		"CanvasLayer": new_node = CanvasLayer.new()
+		"ParallaxBackground": new_node = ParallaxBackground.new()
+		"ParallaxLayer": new_node = ParallaxLayer.new()
+		"SubViewport": new_node = SubViewport.new()
+		"SubViewportContainer": new_node = SubViewportContainer.new()
+		# GPU Particles
+		"GPUParticles2D": new_node = GPUParticles2D.new()
+		"GPUParticles3D": new_node = GPUParticles3D.new()
+		"CPUParticles2D": new_node = CPUParticles2D.new()
+		"CPUParticles3D": new_node = CPUParticles3D.new()
+		_:
+			# Try ClassDB as last resort
+			if ClassDB.class_exists(type_name) and ClassDB.can_instantiate(type_name):
+				var instance = ClassDB.instantiate(type_name)
+				if instance is Node:
+					new_node = instance
+				else:
+					if instance:
+						instance.free()
+					return {"success": false, "error": "Type '%s' is not a Node" % type_name}
+			else:
+				return {"success": false, "error": "Unknown node type: %s" % type_name}
 	
 	new_node.name = node_name
 	
