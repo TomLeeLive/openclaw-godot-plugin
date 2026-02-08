@@ -1,33 +1,33 @@
-# 🛠️ Development Guide
+# 🛠️ 개발 가이드 (Development Guide)
 
-A comprehensive guide for developing the OpenClaw Godot Plugin.
+OpenClaw Godot Plugin 개발을 위한 상세 가이드입니다.
 
-## Table of Contents
+## 목차
 
-1. [Project Structure](#project-structure)
-2. [Development Environment Setup](#development-environment-setup)
-3. [Architecture Overview](#architecture-overview)
-4. [Adding New Tools](#adding-new-tools)
-5. [Debugging](#debugging)
-6. [Code Style](#code-style)
+1. [프로젝트 구조](#프로젝트-구조)
+2. [개발 환경 설정](#개발-환경-설정)
+3. [아키텍처 이해](#아키텍처-이해)
+4. [새 도구 추가하기](#새-도구-추가하기)
+5. [디버깅](#디버깅)
+6. [코드 스타일](#코드-스타일)
 
 ---
 
-## Project Structure
+## 프로젝트 구조
 
 ```
 openclaw-godot-plugin/
 ├── addons/
 │   └── openclaw/
-│       ├── plugin.cfg          # Plugin metadata
-│       ├── openclaw_plugin.gd  # Main EditorPlugin
-│       ├── connection_manager.gd # HTTP connection management
-│       └── tools.gd            # Tool execution logic
-├── OpenClawPlugin~/            # Gateway extension (TypeScript)
-│   ├── index.ts                # Extension entry point
+│       ├── plugin.cfg          # 플러그인 메타데이터
+│       ├── openclaw_plugin.gd  # 메인 EditorPlugin
+│       ├── connection_manager.gd # HTTP 연결 관리
+│       └── tools.gd            # 도구 실행 로직
+├── OpenClawPlugin~/            # Gateway 확장 (TypeScript)
+│   ├── index.ts                # 확장 진입점
 │   ├── package.json
 │   └── tsconfig.json
-├── Documentation~/             # Documentation (excluded from Godot)
+├── Documentation~/             # 문서 (Godot 제외됨)
 │   ├── DEVELOPMENT.md
 │   ├── TESTING.md
 │   └── CONTRIBUTING.md
@@ -35,57 +35,57 @@ openclaw-godot-plugin/
 └── LICENSE
 ```
 
-### Core Files
+### 핵심 파일 설명
 
-| File | Purpose |
-|------|---------|
-| `openclaw_plugin.gd` | EditorPlugin entry point, UI creation, signal connections |
-| `connection_manager.gd` | Gateway HTTP communication (register, poll, heartbeat) |
-| `tools.gd` | 40 tool execution implementations |
-| `OpenClawPlugin~/index.ts` | Gateway extension, provides `godot_execute` tool |
+| 파일 | 역할 |
+|------|------|
+| `openclaw_plugin.gd` | EditorPlugin 진입점, UI 생성, 신호 연결 |
+| `connection_manager.gd` | Gateway HTTP 통신 (register, poll, heartbeat) |
+| `tools.gd` | 40개 도구 실행 로직 |
+| `OpenClawPlugin~/index.ts` | Gateway 확장, `godot_execute` 도구 제공 |
 
 ---
 
-## Development Environment Setup
+## 개발 환경 설정
 
-### Requirements
+### 필수 요구사항
 
-- **Godot 4.x** (4.2+ recommended)
-- **Node.js 18+** (for building gateway extension)
+- **Godot 4.x** (4.2+ 권장)
+- **Node.js 18+** (Gateway 확장 빌드용)
 - **OpenClaw 2026.2.3+**
 
-### 1. Clone the Repository
+### 1. 저장소 클론
 
 ```bash
 git clone https://github.com/TomLeeLive/openclaw-godot-plugin.git
 cd openclaw-godot-plugin
 ```
 
-### 2. Set Up Development Godot Project
+### 2. 개발용 Godot 프로젝트 설정
 
 ```bash
-# Create test project
+# 테스트 프로젝트 생성
 mkdir -p ~/godot-dev-project
 cp -r addons ~/godot-dev-project/
 ```
 
-Open in Godot:
+Godot에서 프로젝트 열기:
 1. `Project → Project Settings → Plugins`
-2. Enable **OpenClaw**
+2. **OpenClaw** 활성화
 
-### 3. Install Gateway Extension
+### 3. Gateway 확장 설치
 
 ```bash
-# Copy extension files
+# 확장 복사
 cp -r OpenClawPlugin~/* ~/.openclaw/extensions/godot/
 
-# Restart gateway
+# Gateway 재시작
 openclaw gateway restart
 ```
 
-### 4. Verify Development Mode
+### 4. 개발 모드 확인
 
-Check Godot Output panel:
+Godot Output 패널에서 확인:
 ```
 [OpenClaw] Plugin loading...
 [OpenClaw] Plugin loaded!
@@ -95,9 +95,9 @@ Check Godot Output panel:
 
 ---
 
-## Architecture Overview
+## 아키텍처 이해
 
-### Communication Flow
+### 통신 흐름
 
 ```
 ┌──────────────────┐     HTTP      ┌──────────────────┐
@@ -116,9 +116,9 @@ Check Godot Output panel:
 └──────────────────┘              └───────────────────┘
 ```
 
-### 1. Registration
+### 1. 등록 (Register)
 
-Plugin registers with Gateway on load:
+플러그인 로드 시 Gateway에 세션 등록:
 
 ```gdscript
 # connection_manager.gd
@@ -132,19 +132,19 @@ func _register():
     _http_post("/godot/register", body, _on_register_complete)
 ```
 
-### 2. Polling
+### 2. 폴링 (Poll)
 
-Long polling for commands (30s timeout):
+명령 대기 (Long polling, 30초 타임아웃):
 
 ```gdscript
 func _poll():
     if is_polling:
-        return  # Prevent duplicate requests
+        return  # 중복 요청 방지
     is_polling = true
     _http_get("/godot/poll?sessionId=" + session_id, _on_poll_complete)
 ```
 
-### 3. Command Execution & Result Transmission
+### 3. 명령 실행 및 결과 전송
 
 ```gdscript
 func _on_command_received(tool_call_id: String, tool_name: String, args: Dictionary):
@@ -152,32 +152,32 @@ func _on_command_received(tool_call_id: String, tool_name: String, args: Diction
     connection_manager.send_result(tool_call_id, result)
 ```
 
-### Play Mode Persistence
+### Play 모드 유지
 
-`PROCESS_MODE_ALWAYS` setting maintains connection during Play mode:
+`PROCESS_MODE_ALWAYS` 설정으로 Play 모드에서도 연결 유지:
 
 ```gdscript
 func _ready():
-    process_mode = Node.PROCESS_MODE_ALWAYS  # Critical!
+    process_mode = Node.PROCESS_MODE_ALWAYS  # 핵심!
 ```
 
 ---
 
-## Adding New Tools
+## 새 도구 추가하기
 
-### Example: Adding `audio.play` Tool
+### 예제: `audio.play` 도구 추가
 
-Let's add a tool that plays audio files.
+오디오 파일을 재생하는 도구를 추가해보겠습니다.
 
-#### Step 1: Register Tool in tools.gd
+#### Step 1: tools.gd에 도구 등록
 
 ```gdscript
-# Add to TOOLS array at top of tools.gd
+# tools.gd 상단 TOOLS 배열에 추가
 
 var TOOLS = [
-    # ... existing tools ...
+    # ... 기존 도구들 ...
     
-    # New tool
+    # 새 도구 추가
     {
         "name": "audio.play",
         "description": "Play an audio file in the editor",
@@ -199,12 +199,12 @@ var TOOLS = [
 ]
 ```
 
-#### Step 2: Add Handler to execute()
+#### Step 2: execute() 함수에 핸들러 추가
 
 ```gdscript
 func execute(tool_name: String, args: Dictionary) -> Dictionary:
     match tool_name:
-        # ... existing cases ...
+        # ... 기존 케이스들 ...
         
         "audio.play":
             return _audio_play(args)
@@ -213,32 +213,32 @@ func execute(tool_name: String, args: Dictionary) -> Dictionary:
             return {"success": false, "error": "Unknown tool: " + tool_name}
 ```
 
-#### Step 3: Implement Handler Function
+#### Step 3: 핸들러 함수 구현
 
 ```gdscript
 func _audio_play(args: Dictionary) -> Dictionary:
     var path = args.get("path", "")
     var volume = args.get("volume", 0.0)
     
-    # Check resource exists
+    # 리소스 존재 확인
     if not ResourceLoader.exists(path):
         return {"success": false, "error": "Audio file not found: " + path}
     
-    # Load audio stream
+    # 오디오 스트림 로드
     var stream = load(path) as AudioStream
     if stream == null:
         return {"success": false, "error": "Invalid audio file: " + path}
     
-    # Create and play AudioStreamPlayer
+    # AudioStreamPlayer 생성 및 재생
     var player = AudioStreamPlayer.new()
     player.stream = stream
     player.volume_db = volume
     
-    # Add to editor root
+    # 에디터 루트에 추가
     editor_interface.get_base_control().add_child(player)
     player.play()
     
-    # Auto-remove when finished
+    # 재생 완료 후 자동 삭제
     player.finished.connect(func(): player.queue_free())
     
     return {
@@ -248,13 +248,13 @@ func _audio_play(args: Dictionary) -> Dictionary:
     }
 ```
 
-#### Step 4: Update Gateway Extension (Optional)
+#### Step 4: Gateway 확장 업데이트 (선택)
 
-Tool list is auto-sent from Godot, so no changes needed in `OpenClawPlugin~/index.ts`.
-To improve tool description:
+`OpenClawPlugin~/index.ts`의 도구 목록은 Godot에서 자동 전송되므로 수정 불필요.
+단, 도구 설명을 개선하려면:
 
 ```typescript
-// index.ts - add to tools array (optional)
+// index.ts - tools 배열에 추가 (선택적)
 {
   name: "audio.play",
   description: "Play audio file in Godot Editor",
@@ -269,14 +269,14 @@ To improve tool description:
 }
 ```
 
-#### Step 5: Test
+#### Step 5: 테스트
 
 ```bash
-# Restart gateway
+# Gateway 재시작
 openclaw gateway restart
 ```
 
-Test in OpenClaw:
+OpenClaw에서 테스트:
 ```
 You: Play the background music
 
@@ -288,94 +288,94 @@ Playing bgm.ogg (duration: 180.5s)
 
 ---
 
-## Debugging
+## 디버깅
 
-### 1. Godot Output Panel
+### 1. Godot Output 패널
 
-Check plugin logs:
+플러그인 로그 확인:
 ```
 [OpenClaw] Plugin loading...
 [OpenClaw] Command: scene.getCurrent
 [OpenClaw] Error: Node not found
 ```
 
-### 2. Using print_debug()
+### 2. print_debug() 사용
 
 ```gdscript
 func _some_function():
-    print_debug("Debug: ", some_variable)  # Includes filename/line
+    print_debug("Debug: ", some_variable)  # 파일명/라인 포함
 ```
 
-### 3. Gateway Log
+### 3. Gateway 로그 확인
 
 ```bash
-# Watch gateway logs in real-time
+# Gateway 로그 실시간 확인
 tail -f ~/.openclaw/logs/gateway.log
 ```
 
-### 4. HTTP Request Debugging
+### 4. HTTP 요청 디버깅
 
 ```gdscript
-# Add to connection_manager.gd
+# connection_manager.gd에 추가
 func _http_post(endpoint: String, body: Dictionary, callback: Callable):
     print("[OpenClaw] POST %s: %s" % [endpoint, JSON.stringify(body)])
-    # ... existing code ...
+    # ... 기존 코드 ...
 ```
 
-### 5. Common Issues
+### 5. 일반적인 문제 해결
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Plugin won't load | GDScript syntax error | Check Output panel, fix syntax |
-| Connection failed | Gateway not running | `openclaw gateway start` |
-| Tool not executing | Tool name mismatch | Check TOOLS array and match statement |
-| Play mode disconnect | PROCESS_MODE not set | `process_mode = PROCESS_MODE_ALWAYS` |
-| HTTP request duplicates | Flag not checked | Use `is_polling` flag |
+| 문제 | 원인 | 해결 |
+|------|------|------|
+| 플러그인 로드 안됨 | GDScript 문법 오류 | Output 패널 확인, 문법 수정 |
+| 연결 실패 | Gateway 미실행 | `openclaw gateway start` |
+| 도구 실행 안됨 | 도구명 불일치 | TOOLS 배열과 match 문 확인 |
+| Play 모드 연결 끊김 | PROCESS_MODE 미설정 | `process_mode = PROCESS_MODE_ALWAYS` |
+| HTTP 요청 중복 | 플래그 미확인 | `is_polling` 플래그 사용 |
 
 ---
 
-## Code Style
+## 코드 스타일
 
-### GDScript Conventions
+### GDScript 컨벤션
 
 ```gdscript
-# Class declaration
+# 클래스 선언
 class_name MyClass
 extends Node
 
-## Doc comment (shown with Ctrl+Shift+D)
-## @param value: The value to set
-## @return: Success status
+## 문서 주석 (Ctrl+Shift+D로 표시)
+## @param value: 설정할 값
+## @return: 성공 여부
 func my_function(value: String) -> bool:
-    # Constants are UPPER_SNAKE_CASE
+    # 상수는 UPPER_SNAKE_CASE
     const MAX_RETRIES = 3
     
-    # Variables are snake_case
+    # 변수는 snake_case
     var retry_count = 0
     
-    # Use explicit types
+    # 명시적 타입 사용
     var result: Dictionary = {}
     
-    # Early return pattern
+    # 조기 반환 패턴
     if value.is_empty():
         return false
     
     return true
 
-# Private functions use _ prefix
+# private 함수는 _ 접두사
 func _internal_helper():
     pass
 
-# Signals are past tense
+# 시그널은 과거형
 signal connection_changed(connected: bool)
 signal command_received(tool_call_id: String, tool_name: String)
 ```
 
-### Error Handling Pattern
+### 에러 처리 패턴
 
 ```gdscript
 func _safe_operation() -> Dictionary:
-    # Always include success field
+    # 항상 success 필드 포함
     if some_error_condition:
         return {"success": false, "error": "Error message"}
     
@@ -385,10 +385,10 @@ func _safe_operation() -> Dictionary:
     }
 ```
 
-### Async Handling
+### 비동기 처리
 
 ```gdscript
-# Wait for HTTPRequest completion
+# HTTPRequest 완료 대기
 func _make_request():
     var http = HTTPRequest.new()
     add_child(http)
@@ -402,16 +402,16 @@ func _on_request_completed(result: int, code: int, headers: PackedStringArray, b
         return
     
     var json = JSON.parse_string(body.get_string_from_utf8())
-    # Process...
+    # 처리...
 ```
 
 ---
 
-## Next Steps
+## 다음 단계
 
-- [TESTING.md](TESTING.md) - Testing Guide
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution Guide
+- [TESTING.md](TESTING.md) - 테스트 가이드
+- [CONTRIBUTING.md](CONTRIBUTING.md) - 기여 가이드
 
 ---
 
-*Documentation Updated: 2026-02-08*
+*문서 업데이트: 2026-02-08*

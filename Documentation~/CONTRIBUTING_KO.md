@@ -1,34 +1,34 @@
-# 🤝 Contributing Guide
+# 🤝 기여 가이드 (Contributing Guide)
 
-Thank you for contributing to the OpenClaw Godot Plugin!
+OpenClaw Godot Plugin에 기여해 주셔서 감사합니다!
 
-## Table of Contents
+## 목차
 
-1. [Ways to Contribute](#ways-to-contribute)
-2. [Development Environment Setup](#development-environment-setup)
-3. [Code Contributions](#code-contributions)
-4. [Pull Request Guidelines](#pull-request-guidelines)
-5. [Issue Reporting](#issue-reporting)
-6. [Code Review Process](#code-review-process)
-7. [Community Guidelines](#community-guidelines)
+1. [기여 방법](#기여-방법)
+2. [개발 환경 설정](#개발-환경-설정)
+3. [코드 기여](#코드-기여)
+4. [Pull Request 가이드](#pull-request-가이드)
+5. [이슈 리포팅](#이슈-리포팅)
+6. [코드 리뷰 프로세스](#코드-리뷰-프로세스)
+7. [커뮤니티 가이드라인](#커뮤니티-가이드라인)
 
 ---
 
-## Ways to Contribute
+## 기여 방법
 
-### Contribution Areas
+### 기여할 수 있는 영역
 
-| Area | Description | Difficulty |
-|------|-------------|------------|
-| 🐛 Bug Fixes | Resolve issues, improve stability | ⭐ |
-| 📝 Documentation | README, examples, translations | ⭐ |
-| 🔧 New Tools | Add features to tools.gd | ⭐⭐ |
-| ⚡ Performance | Optimization, memory management | ⭐⭐⭐ |
-| 🏗️ Architecture | Core structural changes | ⭐⭐⭐ |
+| 영역 | 설명 | 난이도 |
+|------|------|--------|
+| 🐛 버그 수정 | 이슈 해결, 안정성 개선 | ⭐ |
+| 📝 문서화 | README, 예제, 번역 | ⭐ |
+| 🔧 새 도구 추가 | tools.gd에 기능 추가 | ⭐⭐ |
+| ⚡ 성능 개선 | 최적화, 메모리 관리 | ⭐⭐⭐ |
+| 🏗️ 아키텍처 | 핵심 구조 변경 | ⭐⭐⭐ |
 
-### Recommended Issues for First-Time Contributors
+### 처음 기여자를 위한 추천 이슈
 
-Check GitHub for `good first issue` label:
+GitHub에서 `good first issue` 라벨 확인:
 
 ```
 https://github.com/TomLeeLive/openclaw-godot-plugin/labels/good%20first%20issue
@@ -36,78 +36,78 @@ https://github.com/TomLeeLive/openclaw-godot-plugin/labels/good%20first%20issue
 
 ---
 
-## Development Environment Setup
+## 개발 환경 설정
 
-### 1. Fork & Clone
+### 1. 저장소 Fork & Clone
 
 ```bash
-# 1. Fork on GitHub
+# 1. GitHub에서 Fork
 
 # 2. Clone
 git clone https://github.com/YOUR_USERNAME/openclaw-godot-plugin.git
 cd openclaw-godot-plugin
 
-# 3. Add upstream remote
+# 3. 원본 저장소 추가
 git remote add upstream https://github.com/TomLeeLive/openclaw-godot-plugin.git
 ```
 
-### 2. Set Up Test Environment
+### 2. 테스트 환경 구성
 
 ```bash
-# Create Godot test project
+# 테스트 Godot 프로젝트 생성
 mkdir -p ~/godot-dev
 cp -r addons ~/godot-dev/
 
-# Install gateway extension
+# Gateway 확장 설치
 cp -r OpenClawPlugin~/* ~/.openclaw/extensions/godot/
 openclaw gateway restart
 ```
 
-### 3. Branch Strategy
+### 3. 브랜치 전략
 
 ```bash
-# Feature development
+# 기능 개발
 git checkout -b feature/audio-tools
 
-# Bug fix
+# 버그 수정
 git checkout -b fix/connection-timeout
 
-# Documentation
+# 문서
 git checkout -b docs/korean-translation
 ```
 
 ---
 
-## Code Contributions
+## 코드 기여
 
-### Example 1: Adding a New Tool (`animation.play`)
+### 예제 1: 새 도구 추가 (`animation.play`)
 
-#### Step 1: Check/Create Issue
+#### Step 1: 이슈 확인/생성
 
 ```markdown
 ## Feature Request: animation.play tool
 
-### Description
-Tool to control AnimationPlayer nodes
+### 설명
+AnimationPlayer 노드를 제어하는 도구
 
-### Use Cases
-- AI tests character animations
-- Preview cinematic sequences
+### 사용 사례
+- AI가 캐릭터 애니메이션 테스트
+- 시네마틱 시퀀스 미리보기
 
-### Proposed API
+### 제안 API
 animation.play {path: "Player/AnimationPlayer", animation: "walk"}
 animation.stop {path: "Player/AnimationPlayer"}
 animation.list {path: "Player/AnimationPlayer"}
 ```
 
-#### Step 2: Implementation
+#### Step 2: 구현
 
 `addons/openclaw/tools.gd`:
 
 ```gdscript
-# Add to TOOLS array
+# TOOLS 배열에 추가
 var TOOLS = [
-    # ... existing tools ...
+    # ... 기존 도구 ...
     
     {
         "name": "animation.play",
@@ -146,15 +146,15 @@ var TOOLS = [
     }
 ]
 
-# Add handlers to execute function
+# execute 함수에 핸들러 추가
 func execute(tool_name: String, args: Dictionary) -> Dictionary:
     match tool_name:
-        # ... existing cases ...
+        # ... 기존 케이스 ...
         "animation.play": return _animation_play(args)
         "animation.stop": return _animation_stop(args)
         "animation.list": return _animation_list(args)
 
-# Implementation
+# 구현
 func _animation_play(args: Dictionary) -> Dictionary:
     var path = args.get("path", "")
     var animation = args.get("animation", "")
@@ -224,26 +224,32 @@ func _animation_list(args: Dictionary) -> Dictionary:
     }
 ```
 
-#### Step 3: Write Tests
+#### Step 3: 테스트 작성
 
 ```gdscript
-# Add to test_tools.gd
+# test_tools.gd에 추가
 func _test_animation_tools():
     _section("Animation Tools")
     
-    # Prepare test scene
+    # 테스트 씬 준비
     tools.execute("scene.create", {"rootType": "Node2D", "name": "AnimTest"})
     
-    # Test animation.list
+    # AnimationPlayer 생성 (수동으로 해야 함)
+    # 또는 기존 프로젝트의 AnimationPlayer 사용
+    
+    # animation.list
     var list = tools.execute("animation.list", {
-        "path": "AnimationPlayer"  # Use actual path
+        "path": "AnimationPlayer"  # 실제 경로로 변경
     })
     # _assert(list.success, "animation.list works")
+    
+    # animation.play
+    # animation.stop
 ```
 
-#### Step 4: Update Documentation
+#### Step 4: 문서 업데이트
 
-Add to `README.md`:
+`README.md`에 추가:
 
 ```markdown
 ### Animation Tools (3) - NEW
@@ -256,41 +262,41 @@ Add to `README.md`:
 
 ---
 
-### Example 2: Bug Fix (Connection Timeout)
+### 예제 2: 버그 수정 (연결 타임아웃)
 
-#### Issue Analysis
+#### 이슈 분석
 
 ```markdown
 ## Bug: Connection timeout after 60 seconds of inactivity
 
-### Steps to Reproduce
-1. Enable plugin
-2. Wait 60 seconds with no commands
-3. Execute command - timeout occurs
+### 재현 단계
+1. 플러그인 활성화
+2. 60초 동안 아무 명령 없음
+3. 이후 명령 실행 시 타임아웃
 
-### Expected Behavior
-Connection should be maintained
+### 예상 동작
+연결이 유지되어야 함
 
-### Environment
+### 환경
 - Godot 4.6
 - OpenClaw 2026.2.3
 ```
 
-#### Fix
+#### 수정
 
 `connection_manager.gd`:
 
 ```gdscript
-# Problem: heartbeat interval too long
-const HEARTBEAT_INTERVAL = 60.0  # 60 seconds (too long)
+# 문제: heartbeat 간격이 너무 김
+const HEARTBEAT_INTERVAL = 60.0  # 60초 (너무 김)
 
-# Fix: reduce to 30 seconds
-const HEARTBEAT_INTERVAL = 30.0  # 30 seconds
+# 수정: 30초로 단축
+const HEARTBEAT_INTERVAL = 30.0  # 30초
 
-# Add: improved reconnection logic
+# 추가: 재연결 로직 개선
 func _on_heartbeat_timeout():
     if not is_connected_flag:
-        # Attempt reconnection
+        # 재연결 시도
         _reconnect()
         return
     
@@ -301,76 +307,76 @@ func _reconnect():
     _register()
 ```
 
-#### Test
+#### 테스트
 
 ```bash
-# Wait 70 seconds then execute command
+# 70초 대기 후 명령 실행
 sleep 70
 openclaw godot execute editor.getState
-# Should succeed
+# 성공해야 함
 ```
 
 ---
 
-## Pull Request Guidelines
+## Pull Request 가이드
 
-### PR Template
+### PR 템플릿
 
 ```markdown
-## Changes
+## 변경 사항
 
-<!-- Describe what was changed -->
-Added 3 new tools for AnimationPlayer control
+<!-- 무엇을 변경했는지 설명 -->
+AnimationPlayer를 제어하는 3개의 새 도구 추가
 
-## Related Issue
+## 관련 이슈
 
 Fixes #42
 
-## Change Type
+## 변경 유형
 
-- [x] New feature
-- [ ] Bug fix
-- [ ] Documentation
-- [ ] Refactoring
+- [x] 새 기능 (New feature)
+- [ ] 버그 수정 (Bug fix)
+- [ ] 문서 (Documentation)
+- [ ] 리팩토링 (Refactoring)
 
-## Testing
+## 테스트
 
-- [x] Tested on Godot 4.6
-- [x] Existing tools work correctly
-- [x] New tools work correctly
+- [x] Godot 4.6에서 테스트 완료
+- [x] 기존 도구 동작 확인
+- [x] 새 도구 정상 작동 확인
 
-## Checklist
+## 체크리스트
 
-- [x] Code style followed
-- [x] Documentation updated
-- [x] Tests added/updated
-- [ ] No breaking changes
+- [x] 코드 스타일 준수
+- [x] 문서 업데이트
+- [x] 테스트 추가/업데이트
+- [ ] Breaking change 없음
 
-## Screenshots (if applicable)
+## 스크린샷 (해당 시)
 
-<!-- Attach screenshots for UI changes -->
+<!-- UI 변경 시 스크린샷 첨부 -->
 ```
 
-### Good Commit Messages
+### 좋은 커밋 메시지
 
 ```bash
-# Feature addition
+# 기능 추가
 feat(tools): add animation.play, animation.stop, animation.list tools
 
-# Bug fix
+# 버그 수정
 fix(connection): reduce heartbeat interval to 30s to prevent timeout
 
-# Documentation
+# 문서
 docs(readme): add animation tools to feature list
 
-# Refactoring
+# 리팩토링
 refactor(tools): extract common node finding logic
 
-# Style/formatting
+# 스타일/포맷
 style(tools): apply consistent indentation
 ```
 
-### Conventional Commits Format
+### Conventional Commits 형식
 
 ```
 <type>(<scope>): <subject>
@@ -384,138 +390,138 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ---
 
-## Issue Reporting
+## 이슈 리포팅
 
-### Bug Report
+### 버그 리포트
 
 ```markdown
-## Bug Description
+## 버그 설명
 
-<!-- Clearly describe what went wrong -->
+<!-- 무엇이 잘못되었는지 명확하게 설명 -->
 
-## Steps to Reproduce
+## 재현 단계
 
-1. Navigate to '...'
-2. Click '...'
-3. Scroll '...'
-4. Error occurs
+1. '...' 이동
+2. '...' 클릭
+3. '...' 스크롤
+4. 오류 발생
 
-## Expected Behavior
+## 예상 동작
 
-<!-- Describe what should happen -->
+<!-- 정상적으로 어떻게 동작해야 하는지 -->
 
-## Actual Behavior
+## 실제 동작
 
-<!-- Describe what actually happens -->
+<!-- 실제로 어떻게 동작하는지 -->
 
-## Environment
+## 환경
 
 - OS: macOS 15.3
 - Godot: 4.6-stable
 - OpenClaw: 2026.2.3
 - Plugin version: 1.1.0
 
-## Logs
+## 로그
 
 ```
 [OpenClaw] Error: ...
 ```
 
-## Screenshots
+## 스크린샷
 
-<!-- Attach if applicable -->
+<!-- 해당 시 첨부 -->
 ```
 
-### Feature Request
+### 기능 요청
 
 ```markdown
-## Feature Description
+## 기능 설명
 
-<!-- Describe the desired feature -->
+<!-- 원하는 기능 설명 -->
 
-## Use Cases
+## 사용 사례
 
-<!-- Why is this feature needed -->
+<!-- 이 기능이 필요한 이유 -->
 
-## Proposed API
+## 제안 API
 
-<!-- Suggest API format if possible -->
+<!-- 가능하다면 API 형태 제안 -->
 ```gdscript
 animation.play {path: "...", animation: "walk"}
 ```
 
-## Alternatives
+## 대안
 
-<!-- Current workarounds being used -->
+<!-- 현재 어떻게 해결하고 있는지 -->
 ```
 
 ---
 
-## Code Review Process
+## 코드 리뷰 프로세스
 
-### Reviewer Checklist
+### 리뷰어 체크리스트
 
-- [ ] Does the code work for its intended purpose?
-- [ ] Are tests sufficient?
-- [ ] Is documentation updated?
-- [ ] Is code style consistent?
-- [ ] Is error handling appropriate?
-- [ ] Are there performance concerns?
-- [ ] Are there security concerns?
+- [ ] 코드가 목적에 맞게 동작하는가?
+- [ ] 테스트가 충분한가?
+- [ ] 문서가 업데이트되었는가?
+- [ ] 코드 스타일이 일관적인가?
+- [ ] 에러 처리가 적절한가?
+- [ ] 성능 문제가 없는가?
+- [ ] 보안 문제가 없는가?
 
-### Review Comment Examples
+### 리뷰 코멘트 예시
 
 ```markdown
-# Positive
-✅ LGTM! Clean implementation.
+# 긍정적
+✅ LGTM! 깔끔한 구현입니다.
 
-# Suggestion
-💡 Using `is_instance_of()` instead of `is` would be safer here.
+# 제안
+💡 여기서 `is` 대신 `is_instance_of()`를 사용하면 더 안전합니다.
 
-# Request
-⚠️ Null check needed for this case.
+# 요청
+⚠️ 이 경우 null 체크가 필요합니다.
 
-# Question
-❓ What's the rationale for this constant value?
+# 질문
+❓ 이 상수값의 근거가 있나요?
 ```
 
 ---
 
-## Community Guidelines
+## 커뮤니티 가이드라인
 
-### Code of Conduct
+### 행동 강령
 
-- 🤝 Communicate respectfully
-- 🌍 Respect diverse backgrounds and experiences
-- 📚 Provide constructive feedback
-- 🚫 No discrimination or harassment
+- 🤝 존중하는 태도로 소통
+- 🌍 다양한 배경과 경험 존중
+- 📚 건설적인 피드백 제공
+- 🚫 차별, 괴롭힘 금지
 
-### Communication Channels
+### 소통 채널
 
-- **GitHub Issues**: Bugs, feature requests
-- **GitHub Discussions**: Questions, ideas
+- **GitHub Issues**: 버그, 기능 요청
+- **GitHub Discussions**: 질문, 아이디어
 - **Discord**: [OpenClaw Community](https://discord.com/invite/clawd)
 
-### Response Times
+### 응답 시간
 
-- Issues: 1-3 days
-- PRs: Within 1 week for initial review
-- Critical bugs: ASAP
-
----
-
-## License
-
-Contributed code is distributed under the MIT License.
+- 이슈: 1-3일 내 응답
+- PR: 1주일 내 첫 리뷰
+- 긴급 버그: 가능한 빨리
 
 ---
 
-## Thank You! 🙏
+## 라이선스
 
-Every contribution helps. Even small typo fixes are valuable!
-
-If you have questions, please open an issue.
+기여하신 코드는 MIT 라이선스 하에 배포됩니다.
 
 ---
 
-*Documentation Updated: 2026-02-08*
+## 감사합니다! 🙏
+
+모든 기여에 감사드립니다. 작은 오타 수정도 큰 도움이 됩니다!
+
+질문이 있으시면 언제든 이슈를 열어주세요.
+
+---
+
+*문서 업데이트: 2026-02-08*

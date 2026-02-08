@@ -1,44 +1,52 @@
 # 📚 OpenClaw Godot Plugin Documentation
 
-OpenClaw Godot Plugin 문서 모음입니다.
+Documentation for the OpenClaw Godot Plugin.
 
-## 문서 목록
+## Documentation
 
-| 문서 | 설명 | 대상 |
-|------|------|------|
-| [DEVELOPMENT.md](DEVELOPMENT.md) | 개발 가이드 | 플러그인 개발자 |
-| [TESTING.md](TESTING.md) | 테스트 가이드 | QA, 개발자 |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | 기여 가이드 | 오픈소스 기여자 |
+| Document | Description | Audience |
+|----------|-------------|----------|
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Development Guide | Plugin Developers |
+| [TESTING.md](TESTING.md) | Testing Guide | QA, Developers |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution Guide | Open Source Contributors |
 
-## 빠른 시작
+### Korean (한국어)
 
-### 사용자
+| Document | Description |
+|----------|-------------|
+| [DEVELOPMENT_KO.md](DEVELOPMENT_KO.md) | 개발 가이드 |
+| [TESTING_KO.md](TESTING_KO.md) | 테스트 가이드 |
+| [CONTRIBUTING_KO.md](CONTRIBUTING_KO.md) | 기여 가이드 |
 
-→ 메인 [README.md](../README.md) 참조
+## Quick Start
 
-### 개발자
+### Users
+
+→ See main [README.md](../README.md)
+
+### Developers
 
 ```bash
-# 저장소 클론
+# Clone the repository
 git clone https://github.com/TomLeeLive/openclaw-godot-plugin.git
 
-# 개발 문서 읽기
+# Read development docs
 open Documentation~/DEVELOPMENT.md
 ```
 
-### 기여자
+### Contributors
 
-1. [CONTRIBUTING.md](CONTRIBUTING.md) 읽기
-2. 이슈 확인 또는 생성
-3. Fork & 개발
-4. PR 제출
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md)
+2. Check or create an issue
+3. Fork & develop
+4. Submit a PR
 
-## 추가 리소스
+## Additional Resources
 
-- **OpenClaw 문서**: https://docs.openclaw.ai
-- **Godot 문서**: https://docs.godotengine.org
+- **OpenClaw Docs**: https://docs.openclaw.ai
+- **Godot Docs**: https://docs.godotengine.org
 - **Discord**: https://discord.com/invite/clawd
 
 ---
 
-*문서 버전: 1.1.0 | 업데이트: 2026-02-08*
+*Documentation Version: 1.1.0 | Updated: 2026-02-08*

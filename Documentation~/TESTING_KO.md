@@ -1,31 +1,31 @@
-# 🧪 Testing Guide
+# 🧪 테스트 가이드 (Testing Guide)
 
-A comprehensive guide for testing the OpenClaw Godot Plugin.
+OpenClaw Godot Plugin 테스트를 위한 상세 가이드입니다.
 
-## Table of Contents
+## 목차
 
-1. [Test Environment Setup](#test-environment-setup)
-2. [Manual Testing](#manual-testing)
-3. [Automated Testing](#automated-testing)
-4. [Tool-Specific Test Cases](#tool-specific-test-cases)
-5. [Integration Testing](#integration-testing)
-6. [Performance Testing](#performance-testing)
+1. [테스트 환경 설정](#테스트-환경-설정)
+2. [수동 테스트](#수동-테스트)
+3. [자동화 테스트](#자동화-테스트)
+4. [도구별 테스트 케이스](#도구별-테스트-케이스)
+5. [통합 테스트](#통합-테스트)
+6. [성능 테스트](#성능-테스트)
 
 ---
 
-## Test Environment Setup
+## 테스트 환경 설정
 
-### 1. Create Test Project
+### 1. 테스트 프로젝트 생성
 
 ```bash
-# Create dedicated test project
+# 테스트 전용 프로젝트
 mkdir -p /Users/Shared/godot-test-project
 cd /Users/Shared/godot-test-project
 
-# Copy plugin
+# 플러그인 복사
 cp -r /Users/Shared/openclaw-godot-plugin/addons .
 
-# Create project.godot
+# project.godot 생성
 cat > project.godot << 'EOF'
 [gd_resource type="ProjectSettings" format=3]
 
@@ -37,24 +37,24 @@ enabled=PackedStringArray("res://addons/openclaw/plugin.cfg")
 EOF
 ```
 
-### 2. Install Gateway Extension
+### 2. Gateway 확장 설치
 
 ```bash
-# Install extension
+# 확장 설치
 cp -r /Users/Shared/openclaw-godot-plugin/OpenClawPlugin~/* ~/.openclaw/extensions/godot/
 
-# Restart gateway
+# Gateway 재시작
 openclaw gateway restart
 
-# Verify connection
+# 연결 확인
 openclaw godot status
 ```
 
-### 3. Prepare Test Scenes
+### 3. 테스트 씬 준비
 
-Create test scenes in Godot:
+Godot에서 테스트용 씬 생성:
 
-**test_scene.tscn** (2D testing):
+**test_scene.tscn** (2D 테스트용):
 ```
 Node2D (TestRoot)
 ├── Sprite2D (Player)
@@ -63,7 +63,7 @@ Node2D (TestRoot)
 └── Area2D (TriggerZone)
 ```
 
-**test_3d_scene.tscn** (3D testing):
+**test_3d_scene.tscn** (3D 테스트용):
 ```
 Node3D (Level)
 ├── CharacterBody3D (Player3D)
@@ -74,19 +74,19 @@ Node3D (Level)
 
 ---
 
-## Manual Testing
+## 수동 테스트
 
-### Connection Test
+### 연결 테스트
 
 ```bash
-# 1. Check gateway status
+# 1. Gateway 상태 확인
 openclaw gateway status
 
-# 2. List Godot sessions
+# 2. Godot 세션 목록
 openclaw godot sessions
 ```
 
-Expected output:
+예상 출력:
 ```json
 {
   "sessions": [
@@ -100,25 +100,25 @@ Expected output:
 }
 ```
 
-### Direct Testing via OpenClaw
+### OpenClaw에서 직접 테스트
 
 ```
-You: Check Godot editor state
+You: Godot 에디터 상태 확인해줘
 
 OpenClaw:
 [Executes editor.getState]
 
-Godot 4.6-stable running
-- Project: OpenClaw Test Project
-- Current scene: res://test_scene.tscn
-- Play mode: inactive
+Godot 4.6-stable 실행 중
+- 프로젝트: OpenClaw Test Project
+- 현재 씬: res://test_scene.tscn
+- 플레이 모드: 비활성
 ```
 
 ---
 
-## Automated Testing
+## 자동화 테스트
 
-### Test Script (GDScript)
+### 테스트 스크립트 (GDScript)
 
 `addons/openclaw/tests/test_tools.gd`:
 
@@ -126,8 +126,8 @@ Godot 4.6-stable running
 @tool
 extends EditorScript
 
-## OpenClaw Tools Automated Test
-## Usage: Script → Run (Ctrl+Shift+X)
+## OpenClaw Tools 자동 테스트
+## 사용법: Script → Run (Ctrl+Shift+X)
 
 var tools: Node
 var passed = 0
@@ -139,22 +139,22 @@ func _run():
     print("🧪 OpenClaw Tools Test Suite")
     print("=".repeat(50) + "\n")
     
-    # Create Tools instance
+    # Tools 인스턴스 생성
     var Tools = load("res://addons/openclaw/tools.gd")
     tools = Tools.new()
     tools.editor_interface = get_editor_interface()
     
-    # Run tests
+    # 테스트 실행
     _test_editor_tools()
     _test_scene_tools()
     _test_node_tools()
     _test_transform_tools()
     _test_debug_tools()
     
-    # Print results
+    # 결과 출력
     _print_summary()
     
-    # Cleanup
+    # 정리
     tools.queue_free()
 
 func _test_editor_tools():
@@ -194,7 +194,7 @@ func _test_scene_tools():
 func _test_node_tools():
     _section("Node Tools")
     
-    # Create clean scene
+    # scene.create로 깨끗한 씬 생성
     tools.execute("scene.create", {"rootType": "Node2D", "name": "NodeTest"})
     
     # node.create
@@ -234,14 +234,14 @@ func _test_node_tools():
     var deleted = tools.execute("node.delete", {"path": "TestSprite"})
     _assert(deleted.success, "node.delete deletes node")
     
-    # Confirm deletion
+    # 삭제 확인
     var notFound = tools.execute("node.find", {"name": "TestSprite"})
     _assert(notFound.nodes.size() == 0, "node.delete confirmed")
 
 func _test_transform_tools():
     _section("Transform Tools")
     
-    # Create test node
+    # 테스트 노드 생성
     tools.execute("scene.create", {"rootType": "Node2D", "name": "TransformTest"})
     tools.execute("node.create", {"type": "Sprite2D", "name": "Mover"})
     
@@ -253,7 +253,7 @@ func _test_transform_tools():
     })
     _assert(pos.success, "transform.setPosition works")
     
-    # Verify position
+    # 위치 확인
     var data = tools.execute("node.getData", {"path": "Mover"})
     _assert(data.data.position.x == 100, "setPosition x correct")
     _assert(data.data.position.y == 200, "setPosition y correct")
@@ -302,7 +302,7 @@ func _test_debug_tools():
     _assert(logs.success, "console.getLogs works")
     _assert(logs.has("logs"), "console.getLogs has logs")
 
-# Helper functions
+# 헬퍼 함수들
 func _section(name: String):
     print("\n📦 %s" % name)
     print("-".repeat(40))
@@ -334,13 +334,13 @@ func _print_summary():
                 print("    - %s" % r.message)
 ```
 
-### Running Tests
+### 테스트 실행
 
-In Godot:
-1. Open `addons/openclaw/tests/test_tools.gd`
+Godot에서:
+1. `addons/openclaw/tests/test_tools.gd` 열기
 2. **Script → Run** (Ctrl+Shift+X)
 
-Expected output:
+예상 출력:
 ```
 ==================================================
 🧪 OpenClaw Tools Test Suite
@@ -369,53 +369,53 @@ Expected output:
 
 ---
 
-## Tool-Specific Test Cases
+## 도구별 테스트 케이스
 
 ### Scene Tools
 
-| Tool | Test Case | Expected Result |
-|------|-----------|-----------------|
-| `scene.getCurrent` | Call with scene open | Returns name, path, nodeCount |
-| `scene.getCurrent` | Call with no scene | success: false, error message |
-| `scene.list` | Project has scenes | Returns scenes array |
-| `scene.open` | Valid scene path | Scene opens, success: true |
-| `scene.open` | Invalid path | success: false, error message |
-| `scene.save` | Modified scene | File saved, success: true |
-| `scene.create` | Node2D root | New scene created, path returned |
-| `scene.create` | Node3D root | 3D scene created |
-| `scene.create` | Duplicate name | Overwrite or add number |
+| 도구 | 테스트 케이스 | 예상 결과 |
+|------|-------------|-----------|
+| `scene.getCurrent` | 씬 열린 상태에서 호출 | name, path, nodeCount 반환 |
+| `scene.getCurrent` | 씬 없는 상태에서 호출 | success: false, 에러 메시지 |
+| `scene.list` | 프로젝트에 씬 있을 때 | scenes 배열 반환 |
+| `scene.open` | 존재하는 씬 경로 | 씬 열림, success: true |
+| `scene.open` | 존재하지 않는 경로 | success: false, 에러 메시지 |
+| `scene.save` | 수정된 씬 저장 | 파일 저장됨, success: true |
+| `scene.create` | Node2D 루트로 생성 | 새 씬 생성, 경로 반환 |
+| `scene.create` | Node3D 루트로 생성 | 3D 씬 생성 |
+| `scene.create` | 중복 이름 | 덮어쓰기 또는 번호 추가 |
 
 ### Node Tools
 
-| Tool | Test Case | Expected Result |
-|------|-----------|-----------------|
-| `node.find` | Search by name | Matching node list |
-| `node.find` | Search by type | Nodes of that type |
-| `node.find` | Search by group | Group members |
-| `node.find` | Nonexistent node | Empty array |
-| `node.create` | Create Sprite2D | Node added |
-| `node.create` | Create with parent | Added under correct parent |
-| `node.delete` | Delete existing node | Node removed |
-| `node.delete` | Delete root node | Fail or warning |
-| `node.setProperty` | Set Vector2 | Dictionary→Vector2 conversion |
-| `node.setProperty` | Set Color | RGBA dictionary→Color conversion |
+| 도구 | 테스트 케이스 | 예상 결과 |
+|------|-------------|-----------|
+| `node.find` | 이름으로 검색 | 일치하는 노드 목록 |
+| `node.find` | 타입으로 검색 | 해당 타입 노드 목록 |
+| `node.find` | 그룹으로 검색 | 그룹 멤버 목록 |
+| `node.find` | 없는 노드 검색 | 빈 배열 |
+| `node.create` | Sprite2D 생성 | 노드 추가됨 |
+| `node.create` | 부모 지정하여 생성 | 올바른 부모 아래 추가 |
+| `node.delete` | 존재하는 노드 삭제 | 노드 제거됨 |
+| `node.delete` | 루트 노드 삭제 시도 | 실패 또는 경고 |
+| `node.setProperty` | Vector2 값 설정 | 딕셔너리→Vector2 변환 |
+| `node.setProperty` | Color 값 설정 | RGBA 딕셔너리→Color 변환 |
 
-### Input Tools (Play Mode)
+### Input Tools (Play 모드)
 
-| Tool | Test Case | Expected Result |
-|------|-----------|-----------------|
-| `input.keyPress` | "W" key | Key event triggered |
-| `input.keyDown` + `keyUp` | SHIFT hold | Modifier works |
-| `input.mouseClick` | Left click (400, 300) | Click event triggered |
-| `input.mouseMove` | (0, 0) → (800, 600) | Mouse moves |
-| `input.actionPress` | "jump" action | Works if action mapped |
-| `input.actionPress` | Nonexistent action | Warning or ignored |
+| 도구 | 테스트 케이스 | 예상 결과 |
+|------|-------------|-----------|
+| `input.keyPress` | "W" 키 입력 | 키 이벤트 발생 |
+| `input.keyDown` + `keyUp` | SHIFT 홀드 | 모디파이어 동작 |
+| `input.mouseClick` | 좌클릭 (400, 300) | 클릭 이벤트 발생 |
+| `input.mouseMove` | (0, 0) → (800, 600) | 마우스 이동 |
+| `input.actionPress` | "jump" 액션 | 액션 매핑된 경우 동작 |
+| `input.actionPress` | 없는 액션 | 경고 또는 무시 |
 
 ---
 
-## Integration Testing
+## 통합 테스트
 
-### Scenario 1: Scene Creation Workflow
+### 시나리오 1: 씬 생성 워크플로우
 
 ```
 1. scene.create {rootType: "Node2D", name: "Level1"}
@@ -429,12 +429,12 @@ Expected output:
 9. editor.stop
 ```
 
-Expected results:
-- Level1.tscn created
-- Player → Cam hierarchy
-- Screenshot shows player at (400, 300)
+예상 결과:
+- Level1.tscn 생성됨
+- Player → Cam 계층 구조
+- 스크린샷에 (400, 300) 위치에 플레이어
 
-### Scenario 2: Debugging Workflow
+### 시나리오 2: 디버깅 워크플로우
 
 ```
 1. scene.open {path: "res://main.tscn"}
@@ -445,24 +445,24 @@ Expected results:
 6. debug.screenshot
 ```
 
-### Scenario 3: Play Mode Stability
+### 시나리오 3: Play 모드 안정성
 
 ```
 1. editor.play
-2. (wait 30 seconds - heartbeat interval)
-3. editor.getState  # Verify connection maintained
+2. (30초 대기 - heartbeat 주기)
+3. editor.getState  # 연결 유지 확인
 4. input.keyPress {key: "ESCAPE"}
 5. editor.stop
 ```
 
 ---
 
-## Performance Testing
+## 성능 테스트
 
-### Connection Stability
+### 연결 안정성
 
 ```bash
-# 10-minute connection maintenance test
+# 10분간 연결 유지 테스트
 for i in {1..20}; do
     echo "Iteration $i"
     openclaw godot execute editor.getState
@@ -470,10 +470,10 @@ for i in {1..20}; do
 done
 ```
 
-### Command Processing Speed
+### 명령 처리 속도
 
 ```gdscript
-# Add to tools.gd (development only)
+# tools.gd에 추가 (개발용)
 var start_time: int
 
 func execute(tool_name: String, args: Dictionary) -> Dictionary:
@@ -487,46 +487,46 @@ func execute(tool_name: String, args: Dictionary) -> Dictionary:
     return result
 ```
 
-### Expected Performance
+### 기대 성능
 
-| Tool | Expected Response Time |
-|------|----------------------|
+| 도구 | 예상 응답 시간 |
+|------|--------------|
 | editor.getState | < 10ms |
 | scene.getCurrent | < 20ms |
-| node.find | < 50ms (100 nodes) |
+| node.find | < 50ms (100개 노드) |
 | debug.screenshot | < 200ms |
 | scene.save | < 500ms |
 
 ---
 
-## Test Checklist
+## 테스트 체크리스트
 
-### Pre-Release Required Tests
+### 릴리스 전 필수 테스트
 
-- [ ] Plugin enable/disable
-- [ ] Gateway connect/reconnect
-- [ ] All 30 tools basic operation
-- [ ] Connection maintained during Play mode transition
-- [ ] Command execution after 30s+ idle
-- [ ] Proper error messages on failures
-- [ ] No memory leaks (extended run)
+- [ ] 플러그인 활성화/비활성화
+- [ ] Gateway 연결/재연결
+- [ ] 모든 30개 도구 기본 동작
+- [ ] Play 모드 전환 시 연결 유지
+- [ ] 30초+ 유휴 상태 후 명령 실행
+- [ ] 에러 상황 시 적절한 메시지 반환
+- [ ] 메모리 누수 없음 (장시간 실행)
 
-### Edge Cases
+### 엣지 케이스
 
-- [ ] node.getData on empty scene
-- [ ] Node names with special characters
-- [ ] Very deep node hierarchy (10+)
-- [ ] Large scene (1000+ nodes)
-- [ ] Concurrent multiple commands
-- [ ] Reconnection after Gateway restart
-
----
-
-## Next Steps
-
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Development Guide
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution Guide
+- [ ] 빈 씬에서 node.getData
+- [ ] 특수문자 포함 노드 이름
+- [ ] 매우 깊은 노드 계층 (10+)
+- [ ] 대용량 씬 (1000+ 노드)
+- [ ] 동시 다중 명령
+- [ ] Gateway 재시작 후 재연결
 
 ---
 
-*Documentation Updated: 2026-02-08*
+## 다음 단계
+
+- [DEVELOPMENT.md](DEVELOPMENT.md) - 개발 가이드
+- [CONTRIBUTING.md](CONTRIBUTING.md) - 기여 가이드
+
+---
+
+*문서 업데이트: 2026-02-08*
