@@ -112,16 +112,30 @@ func scene_open(args: Dictionary) -> Dictionary:
 	if path.is_empty():
 		return {"success": false, "error": "Path required"}
 	
-	var err = editor_interface.open_scene_from_path(path)
-	return {"success": err == OK, "path": path}
+	# open_scene_from_path returns void in Godot 4.x
+	editor_interface.open_scene_from_path(path)
+	return {"success": true, "path": path}
 
 func scene_save() -> Dictionary:
 	var scene = editor_interface.get_edited_scene_root()
 	if not scene:
 		return {"success": false, "error": "No scene to save"}
 	
-	editor_interface.save_scene()
-	return {"success": true}
+	var path = scene.scene_file_path
+	if path.is_empty():
+		return {"success": false, "error": "Scene has no file path. Save manually first."}
+	
+	# Save using ResourceSaver to avoid progress dialog issues
+	var packed = PackedScene.new()
+	var pack_result = packed.pack(scene)
+	if pack_result != OK:
+		return {"success": false, "error": "Failed to pack scene"}
+	
+	var save_result = ResourceSaver.save(packed, path)
+	if save_result != OK:
+		return {"success": false, "error": "Failed to save scene"}
+	
+	return {"success": true, "path": path}
 
 func scene_create(args: Dictionary) -> Dictionary:
 	var root_type = args.get("rootType", "Node3D")
