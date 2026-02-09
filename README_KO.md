@@ -1,4 +1,4 @@
-# 🐾 OpenClaw Godot Plugin
+# 🦞 OpenClaw Godot Plugin
 
 Godot 4.x를 HTTP를 통해 [OpenClaw](https://github.com/openclaw/openclaw) AI 어시스턴트에 연결합니다.
 
@@ -275,4 +275,4 @@ MIT License
 
 ---
 
-Made with 🐾 by the OpenClaw community
+Made with 🦞 by the OpenClaw community

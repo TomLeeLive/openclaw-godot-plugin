@@ -58,7 +58,7 @@ func _create_dock() -> void:
 	
 	# Title
 	var title = Label.new()
-	title.text = "🐾 OpenClaw"
+	title.text = "🦞 OpenClaw"
 	title.add_theme_font_size_override("font_size", 16)
 	dock.add_child(title)
 	
