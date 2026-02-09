@@ -1,4 +1,4 @@
-# 🐾 OpenClaw Godot Plugin
+# 🦞 OpenClaw Godot Plugin
 
 > **TL;DR:** Vibe-code your game development remotely from anywhere! 🌍
 > 
@@ -278,4 +278,4 @@ MIT License
 
 ---
 
-Made with 🐾 by the OpenClaw community
+Made with 🦞 by the OpenClaw community
