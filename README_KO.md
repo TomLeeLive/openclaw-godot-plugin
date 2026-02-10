@@ -7,6 +7,16 @@ Godot 4.x를 HTTP를 통해 [OpenClaw](https://github.com/openclaw/openclaw) AI 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/tomleelive)
 
+## ⚠️ 면책 조항
+
+이 소프트웨어는 **베타** 버전입니다. 사용에 따른 책임은 본인에게 있습니다.
+
+- 사용 전 항상 프로젝트를 백업하세요
+- 별도의 테스트 프로젝트에서 먼저 테스트하세요
+- 저작자는 데이터 손실이나 프로젝트 손상에 대해 책임지지 않습니다
+
+전체 조항은 [LICENSE](LICENSE)를 참조하세요.
+
 ## ✨ 기능
 
 - 🎬 **씬 관리** - 씬 생성, 열기, 저장, 검사

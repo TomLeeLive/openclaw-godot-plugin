@@ -11,6 +11,16 @@ Connect Godot 4.x to [OpenClaw](https://github.com/openclaw/openclaw) AI assista
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/tomleelive)
 
+## ⚠️ Disclaimer
+
+This software is in **beta**. Use at your own risk.
+
+- Always backup your project before using
+- Test in a separate project first
+- The authors are not responsible for any data loss or project corruption
+
+See [LICENSE](LICENSE) for full terms.
+
 ## ✨ Features
 
 - 🎬 **Scene Management** - Create, open, save, and inspect scenes
