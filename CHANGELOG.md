@@ -1,3 +1,9 @@
+## [1.2.4] - 2026-02-11
+
+### Added
+- Security documentation: `disableModelInvocation` setting explanation
+- Added recommendation for ClawHub publishing
+
 # Changelog
 
 All notable changes to OpenClaw Godot Plugin will be documented in this file.

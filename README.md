@@ -269,6 +269,28 @@ Both paths install the same extension code. Use whichever method is convenient.
 - Heartbeat interval is 30 seconds
 - If disconnected, plugin auto-reconnects
 
+## 🔐 Security: Model Invocation Setting
+
+When publishing to ClawHub or installing as a skill, you can configure `disableModelInvocation` in the skill metadata:
+
+| Setting | AI Auto-Invoke | User Explicit Request |
+|---------|---------------|----------------------|
+| `false` (default) | ✅ Allowed | ✅ Allowed |
+| `true` | ❌ Blocked | ✅ Allowed |
+
+### Recommendation for Godot Plugin: **`true`**
+
+**Reason:** During Godot development, it's useful for AI to autonomously perform supporting tasks like checking scene tree, taking screenshots, and inspecting nodes.
+
+**When to use `true`:** For sensitive tools (payments, deletions, message sending, etc.)
+
+```yaml
+# Example skill metadata
+metadata:
+  openclaw:
+    disableModelInvocation: true  # Recommended for Godot plugin
+```
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

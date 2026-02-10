@@ -265,6 +265,28 @@ Skill (extension/)         ───복사───→  ~/.openclaw/extensions/g
 - 하트비트 간격은 30초
 - 연결이 끊기면 플러그인이 자동 재연결
 
+## 🔐 보안: 모델 호출 설정
+
+ClawHub에 퍼블리시하거나 스킬로 설치할 때, 스킬 메타데이터에서 `disableModelInvocation`을 설정할 수 있습니다:
+
+| 설정 | AI 자동 호출 | 사용자 명시적 요청 |
+|------|-------------|------------------|
+| `false` (기본값) | ✅ 허용 | ✅ 허용 |
+| `true` | ❌ 차단 | ✅ 허용 |
+
+### Godot 플러그인 권장: **`true`**
+
+**이유:** Godot 작업 중 AI가 자율적으로 씬 트리 확인, 스크린샷, 노드 검사 등 보조 작업을 수행하는 것이 유용함.
+
+**`true` 사용 시기:** 민감한 도구 (결제, 삭제, 메시지 전송 등)에 적합
+
+```yaml
+# 스킬 메타데이터 예시
+metadata:
+  openclaw:
+    disableModelInvocation: true  # Godot 플러그인 권장값
+```
+
 ## 변경 이력
 
 버전 히스토리는 [CHANGELOG.md](CHANGELOG.md)를 참조하세요.
