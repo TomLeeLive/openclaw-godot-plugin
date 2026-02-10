@@ -1,4 +1,9 @@
-## [1.2.4] - 2026-02-11
+## [1.2.5] - 2026-02-10
+
+### Changed
+- Version bump for release preparation
+
+## [1.2.4] - 2026-02-10
 
 ### Added
 - Security documentation: `disableModelInvocation` setting explanation
