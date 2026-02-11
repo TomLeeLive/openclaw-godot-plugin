@@ -17,6 +17,26 @@ Godot 4.x를 HTTP를 통해 [OpenClaw](https://github.com/openclaw/openclaw) AI 
 
 전체 조항은 [LICENSE](LICENSE)를 참조하세요.
 
+## 🔀 하이브리드 아키텍처
+
+이 플러그인은 **두 가지 연결 모드**를 지원합니다:
+
+### 모드 A: OpenClaw Gateway (원격 접속)
+```
+Telegram/Discord/Web → OpenClaw Gateway → Godot Plugin
+```
+- ✅ 어디서든 원격 접속
+- ✅ 채팅 통합 (Telegram, Discord 등)
+
+### 모드 B: MCP 직접 연결 (로컬 개발)
+```
+Claude Code/Desktop → MCP Server → Godot Plugin
+```
+- ✅ Claude Code, Cursor와 직접 연동
+- ✅ 로컬 개발 시 낮은 지연시간
+
+Claude Code 연동 상세는 [MCP~/README.md](MCP~/README.md) 참조.
+
 ## ✨ 기능
 
 - 🎬 **씬 관리** - 씬 생성, 열기, 저장, 검사

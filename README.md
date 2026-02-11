@@ -21,6 +21,26 @@ This software is in **beta**. Use at your own risk.
 
 See [LICENSE](LICENSE) for full terms.
 
+## 🔀 Hybrid Architecture
+
+This plugin supports **two connection modes**:
+
+### Mode A: OpenClaw Gateway (Remote Access)
+```
+Telegram/Discord/Web → OpenClaw Gateway → Godot Plugin
+```
+- ✅ Remote access from anywhere
+- ✅ Chat integration (Telegram, Discord, etc.)
+
+### Mode B: MCP Direct (Local Development)
+```
+Claude Code/Desktop → MCP Server → Godot Plugin
+```
+- ✅ Direct connection with Claude Code, Cursor
+- ✅ Lower latency for local development
+
+See [MCP~/README.md](MCP~/README.md) for Claude Code integration details.
+
 ## ✨ Features
 
 - 🎬 **Scene Management** - Create, open, save, and inspect scenes
