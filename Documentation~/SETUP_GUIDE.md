@@ -2,6 +2,31 @@
 
 This guide explains how to set up the OpenClaw Godot Plugin for different use cases.
 
+## 🤔 Which Mode Do I Need?
+
+| How You Use AI | Mode Needed | Why |
+|----------------|-------------|-----|
+| **Chat apps** (Telegram, Discord) | Mode A: Gateway | OpenClaw routes commands to Godot |
+| **Claude Code** in terminal | Mode B: MCP | Direct connection needed |
+| **Both** | Hybrid | Best of both worlds |
+
+### If You Already Use OpenClaw...
+
+If you're chatting with an AI assistant through OpenClaw, **you don't need MCP setup** - the assistant already has Godot tools via the Gateway!
+
+```
+You (Telegram) → OpenClaw Gateway → AI Assistant → godot_execute tool → Godot
+                                    ↑
+                            Already has access!
+```
+
+### When MCP is Useful
+
+MCP is useful when:
+1. **Using Claude Code directly** in terminal
+2. **Using Claude Desktop** app
+3. **Using Cursor** or other MCP-compatible editors
+
 ## 🅰️ Mode A: OpenClaw Gateway (Remote Access)
 
 **When to use:** When you want to develop games remotely via Telegram, Discord, or web.
