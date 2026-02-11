@@ -52,6 +52,28 @@ Claude Code/Desktop → MCP Server → Godot Plugin
 
 📖 **[Setup Guide](Documentation~/SETUP_GUIDE.md)** | **[셋업 가이드](Documentation~/SETUP_GUIDE_KO.md)**
 
+### Claude Code MCP Registration
+
+**First time setup:**
+```bash
+# Register MCP server
+claude mcp add godot -- node /path/to/your-project/MCP~/index.js
+```
+
+**Re-register (if path changed):**
+```bash
+# Remove old registration
+claude mcp remove godot
+
+# Add with new path
+claude mcp add godot -- node /new/path/MCP~/index.js
+```
+
+**Verify registration:**
+```bash
+claude mcp list
+```
+
 ## ✨ Key Features
 
 - 🎮 **Works in Editor & Play Mode** - No need to hit Play to use AI tools
