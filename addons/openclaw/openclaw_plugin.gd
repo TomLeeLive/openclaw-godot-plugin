@@ -9,6 +9,7 @@ const Tools = preload("res://addons/openclaw/tools.gd")
 var connection_manager
 var tools
 var status_label: Label
+var mcp_status_label: Label
 var dock: Control
 
 func _enter_tree() -> void:
@@ -62,6 +63,15 @@ func _create_dock() -> void:
 	title.add_theme_font_size_override("font_size", 16)
 	dock.add_child(title)
 	
+	# Separator
+	dock.add_child(HSeparator.new())
+	
+	# === Gateway Section ===
+	var gateway_title = Label.new()
+	gateway_title.text = "Gateway (Remote)"
+	gateway_title.add_theme_font_size_override("font_size", 13)
+	dock.add_child(gateway_title)
+	
 	# Status
 	status_label = Label.new()
 	status_label.text = "Status: Connecting..."
@@ -69,7 +79,7 @@ func _create_dock() -> void:
 	
 	# Gateway URL
 	var url_label = Label.new()
-	url_label.text = "Gateway: http://localhost:18789"
+	url_label.text = "URL: http://localhost:18789"
 	url_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 	dock.add_child(url_label)
 	
@@ -78,6 +88,45 @@ func _create_dock() -> void:
 	reconnect_btn.text = "Reconnect"
 	reconnect_btn.pressed.connect(_on_reconnect_pressed)
 	dock.add_child(reconnect_btn)
+	
+	# Separator
+	dock.add_child(HSeparator.new())
+	
+	# === MCP Section ===
+	var mcp_title = Label.new()
+	mcp_title.text = "MCP Bridge (Local)"
+	mcp_title.add_theme_font_size_override("font_size", 13)
+	dock.add_child(mcp_title)
+	
+	# MCP Status
+	mcp_status_label = Label.new()
+	mcp_status_label.text = "Port: 27183"
+	mcp_status_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	dock.add_child(mcp_status_label)
+	
+	# MCP Info
+	var mcp_info = Label.new()
+	mcp_info.text = "For Claude Code / Cursor"
+	mcp_info.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	mcp_info.add_theme_font_size_override("font_size", 11)
+	dock.add_child(mcp_info)
+	
+	# MCP Command
+	var mcp_cmd = Label.new()
+	mcp_cmd.text = "claude mcp add godot -- \nnode MCP~/index.js"
+	mcp_cmd.add_theme_color_override("font_color", Color(0.4, 0.6, 0.8))
+	mcp_cmd.add_theme_font_size_override("font_size", 10)
+	dock.add_child(mcp_cmd)
+	
+	# Separator
+	dock.add_child(HSeparator.new())
+	
+	# === Info Section ===
+	var info_label = Label.new()
+	info_label.text = "Tools: 30 | v1.3.0"
+	info_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	info_label.add_theme_font_size_override("font_size", 11)
+	dock.add_child(info_label)
 	
 	add_control_to_dock(DOCK_SLOT_RIGHT_UL, dock)
 
