@@ -58,6 +58,15 @@ Claude Code/Desktop → MCP Server → Godot Plugin
 | **Godot** | 4.x |
 | **OpenClaw** | 2026.2.3+ |
 
+> ⚠️ **Tested on Godot 4.6-stable only.**
+> 
+> While designed for Godot 4.x, this plugin has only been tested on Godot 4.6-stable.
+> If you encounter issues on other Godot versions, please:
+> - 🐛 [Open an Issue](https://github.com/TomLeeLive/openclaw-godot-plugin/issues) with your Godot version and error details
+> - 🔧 [Submit a Pull Request](https://github.com/TomLeeLive/openclaw-godot-plugin/pulls) if you have a fix
+> 
+> Your contributions help make this plugin work across all Godot versions!
+
 ## Installation
 
 ### 1. Install OpenClaw Gateway Extension (Required)
