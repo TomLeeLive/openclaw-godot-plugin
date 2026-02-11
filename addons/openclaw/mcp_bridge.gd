@@ -78,16 +78,24 @@ func _process(_delta: float) -> void:
 	for i in range(_clients.size()):
 		var client = _clients[i]
 		
-		match client.get_status():
+		# Poll first to update status
+		client.poll()
+		var status = client.get_status()
+		
+		match status:
 			StreamPeerTCP.STATUS_CONNECTED:
-				client.poll()
 				if client.get_available_bytes() > 0:
 					_handle_client_data(client)
+					to_remove.append(i)  # Close after handling (HTTP/1.0 style)
 			StreamPeerTCP.STATUS_NONE, StreamPeerTCP.STATUS_ERROR:
 				to_remove.append(i)
+			StreamPeerTCP.STATUS_CONNECTING:
+				pass  # Still connecting, wait
 	
 	# Remove disconnected clients (in reverse order)
 	for i in range(to_remove.size() - 1, -1, -1):
+		var client = _clients[to_remove[i]]
+		client.disconnect_from_host()
 		_clients.remove_at(to_remove[i])
 
 func _handle_client_data(client: StreamPeerTCP) -> void:
