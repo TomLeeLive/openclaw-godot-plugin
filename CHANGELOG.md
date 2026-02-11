@@ -1,3 +1,9 @@
+## [1.4.1] - 2026-02-12
+
+### Changed
+- License changed from MIT to Apache 2.0
+- Documentation sync with skill
+
 ## [1.4.0] - 2026-02-12
 
 ### Added

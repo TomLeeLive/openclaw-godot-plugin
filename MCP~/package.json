@@ -1,6 +1,6 @@
 {
   "name": "openclaw-godot-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for OpenClaw Godot Plugin - enables Claude Code integration",
   "main": "index.js",
   "type": "module",
