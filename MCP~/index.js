@@ -15,7 +15,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 
 const GODOT_HOST = process.env.GODOT_HOST || '127.0.0.1';
-const GODOT_PORT = process.env.GODOT_PORT || 27183;
+const GODOT_PORT = process.env.MCP_PORT || process.env.GODOT_PORT || 27183;
 const GODOT_URL = `http://${GODOT_HOST}:${GODOT_PORT}`;
 
 // Tool definitions - mirrors Godot plugin tools

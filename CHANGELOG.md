@@ -1,3 +1,23 @@
+## [1.4.0] - 2026-02-12
+
+### Added
+- **MCP Bridge** - Built-in HTTP server for local MCP clients (Claude Code, Cursor)
+- MCP Port setting (editable in dock UI)
+- MCP Start/Stop button
+- MCP auto-start on plugin load
+- Gateway Connect/Disconnect buttons
+- Gateway URL setting (editable in dock UI)
+- Settings persistence (`user://openclaw_settings.cfg`)
+
+### Changed
+- Editor dock UI completely redesigned
+- Version bumped to 1.4.0 for significant feature addition
+
+### Technical
+- New `mcp_bridge.gd` - GDScript HTTP server implementation
+- TCPServer-based HTTP handling with JSON parsing
+- CORS support for cross-origin requests
+
 ## [1.2.5] - 2026-02-10
 
 ### Changed
