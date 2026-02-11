@@ -4,7 +4,7 @@
 > 
 > **한줄요약:** 이제 집밖에서도 원격으로 바이브코딩으로 게임 개발 가능합니다! 🎮
 
-Connect Godot 4.x to [OpenClaw](https://github.com/openclaw/openclaw) AI assistant via HTTP.
+Connect Godot 4.x to [OpenClaw](https://github.com/openclaw/openclaw) AI assistant via HTTP. Works in **Editor mode** without hitting Play!
 
 [![Godot](https://img.shields.io/badge/Godot-4.x-blue?logo=godot-engine)](https://godotengine.org)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-2026.2.3+-green)](https://github.com/openclaw/openclaw)
@@ -23,7 +23,7 @@ See [LICENSE](LICENSE) for full terms.
 
 ## 🔀 Hybrid Architecture
 
-This plugin supports **two connection modes**:
+This plugin supports **two connection modes** - use whichever fits your workflow:
 
 ### Mode A: OpenClaw Gateway (Remote Access)
 ```
@@ -31,23 +31,36 @@ Telegram/Discord/Web → OpenClaw Gateway → Godot Plugin
 ```
 - ✅ Remote access from anywhere
 - ✅ Chat integration (Telegram, Discord, etc.)
+- ✅ Cron jobs, automation, multi-device
+- ⚠️ Requires OpenClaw Gateway running
 
 ### Mode B: MCP Direct (Local Development)
 ```
 Claude Code/Desktop → MCP Server → Godot Plugin
 ```
-- ✅ Direct connection with Claude Code, Cursor
+- ✅ Direct connection, no middleware
+- ✅ Works with Claude Code, Cursor, etc.
 - ✅ Lower latency for local development
+- ⚠️ Local only (127.0.0.1)
+
+### Quick Setup
+
+| Mode | Setup |
+|------|-------|
+| **OpenClaw** | Install plugin + Gateway extension, auto-connect |
+| **MCP** | Install plugin + register MCP server with Claude |
 
 📖 **[Setup Guide](Documentation~/SETUP_GUIDE.md)** | **[셋업 가이드](Documentation~/SETUP_GUIDE_KO.md)**
 
-## ✨ Features
+## ✨ Key Features
 
+- 🎮 **Works in Editor & Play Mode** - No need to hit Play to use AI tools
+- 🔌 **Auto-Connect** - Connects when Godot starts, maintains connection across mode changes
 - 🎬 **Scene Management** - Create, open, save, and inspect scenes
-- 🔧 **Node Manipulation** - Create, find, modify, delete nodes
-- 🎮 **Input Simulation** - Keyboard, mouse, and action input for game testing
+- 🔧 **Node Manipulation** - Create, find, modify, delete nodes (80+ types)
 - 📸 **Debug Tools** - Screenshots, scene tree view, console logs
-- 🎯 **Editor Control** - Play, stop, pause scenes
+- 🎮 **Input Simulation** - Keyboard, mouse, and action input for game testing
+- 🎯 **Editor Control** - Play, stop, pause scenes remotely
 - 📜 **Script Access** - List and read GDScript files
 - 🔄 **Play Mode Stability** - Maintains connection during Play mode
 
@@ -69,6 +82,23 @@ Claude Code/Desktop → MCP Server → Godot Plugin
 
 ## Installation
 
+### Option 1: Git Clone (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/TomLeeLive/openclaw-godot-plugin.git
+
+# Copy addon to your project
+cp -r openclaw-godot-plugin/addons/openclaw your-project/addons/
+```
+
+### Option 2: Download ZIP
+
+1. Download from [Releases](https://github.com/TomLeeLive/openclaw-godot-plugin/releases)
+2. Extract `addons/openclaw` to your project's `addons/` directory
+
+## Quick Start
+
 ### 1. Install OpenClaw Gateway Extension (Required)
 
 Copy the gateway extension files to OpenClaw:
@@ -84,19 +114,35 @@ openclaw gateway restart
 openclaw godot status
 ```
 
-> **Note:** `OpenClawPlugin~` contains the gateway extension that enables `godot_execute` and `godot_sessions` tools.
+> **Note:** `OpenClawPlugin~` contains the gateway extension that enables `godot_execute` and `godot_sessions` tools. This is required for OpenClaw to communicate with Godot.
 
 ### 2. Install Godot Plugin
 
 1. Copy `addons/openclaw` folder to your project's `addons/` directory
 2. Enable the plugin: `Project → Project Settings → Plugins → OpenClaw → Enable`
-3. The plugin will auto-connect to OpenClaw Gateway
+3. Connection is automatic when Godot starts
+4. Check Output panel for `[OpenClaw] Connected to Gateway`
 
-### 3. Install OpenClaw Skill (Optional)
+### 3. Chat with OpenClaw
+
+Ask OpenClaw to inspect your scene, create nodes, or debug issues - all without entering Play mode!
+
+### 4. Install OpenClaw Skill (Optional)
+
+The companion skill provides workflow patterns and tool references for the AI:
 
 ```bash
+# Clone skill to OpenClaw workspace
 git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/workspace/skills/godot-plugin
 ```
+
+The skill provides:
+- Quick reference for all 30 tools
+- Common workflow patterns (scene creation, testing, etc.)
+- Detailed parameter documentation
+- Troubleshooting guides
+
+> **Note:** The skill is separate from the gateway extension. The extension enables the tools; the skill teaches the AI how to use them effectively.
 
 ## Available Tools (30 tools, 80+ node types)
 
@@ -147,7 +193,7 @@ git clone https://github.com/TomLeeLive/openclaw-godot-skill.git ~/.openclaw/wor
 | `console.getLogs` | Get logs from Godot log file |
 | `console.clear` | Clear log marker (placeholder) |
 
-### Input Tools (7) - NEW
+### Input Tools (7)
 | Tool | Description |
 |------|-------------|
 | `input.keyPress` | Press and release a key |
@@ -215,7 +261,7 @@ Found 2 errors:
 
 The plugin connects to `http://localhost:18789` by default (OpenClaw Gateway).
 
-To change, modify `GATEWAY_URL` in `connection_manager.gd`.
+To change, modify `GATEWAY_URL` in `addons/openclaw/connection_manager.gd`.
 
 ## Architecture
 
@@ -240,7 +286,7 @@ To change, modify `GATEWAY_URL` in `connection_manager.gd`.
 │                         │                                    │
 │                         ▼                                    │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │           Tools (40 tools)                              │ │
+│  │           Tools (30 tools, 80+ node types)              │ │
 │  │                                                          │ │
 │  │  • Scene/Node/Transform manipulation                    │ │
 │  │  • Input simulation (keyboard, mouse, actions)          │ │
@@ -296,7 +342,7 @@ Both paths install the same extension code. Use whichever method is convenient.
 ### Connection issues
 - Verify Gateway is running: `openclaw gateway status`
 - Check URL: default is `http://localhost:18789`
-- Look at OpenClaw dock panel in Godot for status
+- Look at Output panel in Godot for `[OpenClaw]` status
 
 ### Input not working
 - Input simulation only works during Play mode
@@ -317,7 +363,7 @@ When publishing to ClawHub or installing as a skill, you can configure `disableM
 | `false` (default) | ✅ Allowed | ✅ Allowed |
 | `true` | ❌ Blocked | ✅ Allowed |
 
-### Recommendation for Godot Plugin: **`true`**
+### Recommendation for Godot Plugin: **`false`**
 
 **Reason:** During Godot development, it's useful for AI to autonomously perform supporting tasks like checking scene tree, taking screenshots, and inspecting nodes.
 
@@ -327,8 +373,15 @@ When publishing to ClawHub or installing as a skill, you can configure `disableM
 # Example skill metadata
 metadata:
   openclaw:
-    disableModelInvocation: true  # Recommended for Godot plugin
+    disableModelInvocation: false  # Recommended for Godot plugin
 ```
+
+## Documentation
+
+- 📖 **[Setup Guide](Documentation~/SETUP_GUIDE.md)** | **[셋업 가이드](Documentation~/SETUP_GUIDE_KO.md)**
+- 🔧 **[Development](Documentation~/DEVELOPMENT.md)** | **[개발 가이드](Documentation~/DEVELOPMENT_KO.md)**
+- 🧪 **[Testing](Documentation~/TESTING.md)** | **[테스팅](Documentation~/TESTING_KO.md)**
+- 🤝 **[Contributing](Documentation~/CONTRIBUTING.md)** | **[기여 가이드](Documentation~/CONTRIBUTING_KO.md)**
 
 ## Changelog
 
@@ -336,7 +389,7 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
-MIT License
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
