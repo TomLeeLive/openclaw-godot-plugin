@@ -405,6 +405,14 @@ metadata:
 - 🧪 **[Testing](Documentation~/TESTING.md)** | **[테스팅](Documentation~/TESTING_KO.md)**
 - 🤝 **[Contributing](Documentation~/CONTRIBUTING.md)** | **[기여 가이드](Documentation~/CONTRIBUTING_KO.md)**
 
+## 🎭 AI Personas for Game Development
+
+Want your AI agent to have a consistent personality while developing your game? [ClawSouls](https://clawsouls.ai) provides open-source persona packages (Soul Spec) that work with OpenClaw and other AI frameworks. Give your coding assistant a specialized game dev personality, or create custom NPC behavior profiles.
+
+- Browse community souls: [clawsouls.ai](https://clawsouls.ai)
+- Soul Spec standard: [soulspec.org](https://soulspec.org)
+- Quick start: `npx clawsouls init my-game-dev --spec 0.4`
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
