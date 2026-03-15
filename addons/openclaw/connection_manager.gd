@@ -5,7 +5,7 @@ extends Node
 signal command_received(tool_call_id: String, tool_name: String, args: Dictionary)
 signal connection_changed(connected: bool)
 
-const GATEWAY_URL = "http://localhost:18789"
+var GATEWAY_URL = "http://localhost:18789"
 const API_PREFIX = "/godot"
 const POLL_INTERVAL = 0.5
 const HEARTBEAT_INTERVAL = 30.0  # Extended for Play mode stability

@@ -56,6 +56,10 @@ func _enter_tree() -> void:
 	_create_dock()
 	
 	# Start connections (deferred to ensure _ready() has run)
+	# Only override if user has configured a non-default URL
+	const DEFAULT_URL = "http://localhost:18789"
+	if not gateway_url.is_empty() and gateway_url != DEFAULT_URL:
+		connection_manager.GATEWAY_URL = gateway_url
 	connection_manager.call_deferred("start")
 	
 	# Auto-start MCP bridge
