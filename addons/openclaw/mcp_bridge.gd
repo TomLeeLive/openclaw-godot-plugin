@@ -12,6 +12,10 @@ var _clients: Array[StreamPeerTCP] = []
 var _port: int = 27183
 var _running: bool = false
 var _tools_handler  # Reference to Tools node
+# Optional shared-secret auth. Set the OPENCLAW_BRIDGE_TOKEN environment variable
+# before launching Godot; requests must then carry "X-OpenClaw-Token: <token>".
+# Empty = no auth (backward compatible; server only listens on 127.0.0.1).
+var _token: String = ""
 
 func _ready() -> void:
 	set_process(false)
@@ -19,19 +23,20 @@ func _ready() -> void:
 func start(port: int, tools_handler) -> bool:
 	if _running:
 		stop()
-	
+
 	_port = port
 	_tools_handler = tools_handler
+	_token = OS.get_environment("OPENCLAW_BRIDGE_TOKEN")
 	_server = TCPServer.new()
-	
+
 	var err = _server.listen(_port, "127.0.0.1")
 	if err != OK:
 		push_error("[OpenClaw MCP Bridge] Failed to start server on port %d: %s" % [_port, error_string(err)])
 		return false
-	
+
 	_running = true
 	set_process(true)
-	print("[OpenClaw MCP Bridge] Server started on http://127.0.0.1:%d" % _port)
+	print("[OpenClaw MCP Bridge] Server started on http://127.0.0.1:%d%s" % [_port, " (token auth ON)" if not _token.is_empty() else ""])
 	started.emit()
 	return true
 
@@ -116,8 +121,9 @@ func _handle_client_data(client: StreamPeerTCP) -> void:
 	
 	var method = request_line[0]
 	var path = request_line[1]
-	
-	# Find body (after empty line)
+
+	# Parse headers + find body (after empty line)
+	var headers: Dictionary = {}
 	var body = ""
 	var found_empty = false
 	for line in lines:
@@ -125,14 +131,28 @@ func _handle_client_data(client: StreamPeerTCP) -> void:
 			body += line
 		elif line.is_empty():
 			found_empty = true
-	
+		else:
+			var sep = line.find(":")
+			if sep > 0:
+				headers[line.substr(0, sep).strip_edges().to_lower()] = line.substr(sep + 1).strip_edges()
+
+	# Reject browser-originated requests: local MCP clients (Claude Code, Cursor)
+	# never send an Origin header — anything that does is a web page probing the
+	# local bridge (CSRF/XSS vector).
+	if headers.has("origin"):
+		_send_response(client, 403, {"error": "Browser-originated requests are not allowed"})
+		return
+
+	# Optional shared-secret auth (OPENCLAW_BRIDGE_TOKEN)
+	if not _token.is_empty() and headers.get("x-openclaw-token", "") != _token:
+		_send_response(client, 401, {"error": "Missing or invalid X-OpenClaw-Token"})
+		return
+
 	# Route request
 	if method == "POST" and path == "/tool":
 		_handle_tool_request(client, body)
 	elif method == "GET" and path == "/status":
 		_handle_status_request(client)
-	elif method == "OPTIONS":
-		_handle_options_request(client)
 	else:
 		_send_response(client, 404, {"error": "Not found"})
 
@@ -172,30 +192,22 @@ func _handle_status_request(client: StreamPeerTCP) -> void:
 	_send_response(client, 200, {
 		"status": "running",
 		"port": _port,
-		"version": "1.4.0"
+		"version": "1.4.4",
+		"auth": "token" if not _token.is_empty() else "none"
 	})
-
-func _handle_options_request(client: StreamPeerTCP) -> void:
-	# CORS preflight
-	var response = "HTTP/1.1 204 No Content\r\n"
-	response += "Access-Control-Allow-Origin: *\r\n"
-	response += "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n"
-	response += "Access-Control-Allow-Headers: Content-Type\r\n"
-	response += "Content-Length: 0\r\n"
-	response += "\r\n"
-	client.put_data(response.to_utf8_buffer())
 
 func _send_response(client: StreamPeerTCP, status_code: int, data: Dictionary) -> void:
 	var json_body = JSON.stringify(data)
 	var status_text = _get_status_text(status_code)
-	
+
+	# No CORS headers on purpose: the bridge is a localhost-only API for native
+	# MCP clients — advertising cross-origin access would invite browser callers.
 	var response = "HTTP/1.1 %d %s\r\n" % [status_code, status_text]
 	response += "Content-Type: application/json\r\n"
-	response += "Access-Control-Allow-Origin: *\r\n"
 	response += "Content-Length: %d\r\n" % json_body.length()
 	response += "\r\n"
 	response += json_body
-	
+
 	client.put_data(response.to_utf8_buffer())
 
 func _get_status_text(code: int) -> String:
@@ -203,6 +215,8 @@ func _get_status_text(code: int) -> String:
 		200: return "OK"
 		204: return "No Content"
 		400: return "Bad Request"
+		401: return "Unauthorized"
+		403: return "Forbidden"
 		404: return "Not Found"
 		500: return "Internal Server Error"
 		_: return "Unknown"
